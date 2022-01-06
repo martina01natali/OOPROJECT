@@ -1,0 +1,43 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># List of paths to ignore in sync\r\n# C:\\Users\\MARTINA\\Desktop\\OOPROJECT\\.gitignore\r\n\r\n\r\n.\\desktop.ini\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-16LE
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision 5f83c09f8a8f227f6bd1a8d42db572d4facf7d18)
++++ b/.gitignore	(date 1641477453937)
+@@ -1,5 +1,3 @@
+ # List of paths to ignore in sync
+ # C:\Users\MARTINA\Desktop\OOPROJECT\.gitignore
+-
+-
+ .\desktop.ini
+Index: README.md
+===================================================================
+diff --git a/README.md b/README.md
+deleted file mode 100644
+--- a/README.md	(revision 5f83c09f8a8f227f6bd1a8d42db572d4facf7d18)
++++ /dev/null	(revision 5f83c09f8a8f227f6bd1a8d42db572d4facf7d18)
+@@ -1,20 +0,0 @@
+-# README
+-
+-## python project(s)
+-
+-- python: process all claro files and produce nice plots with a code that can run on all files
+-- python: process SiPM data
+-
+----
+-
+-## c++ projects
+-
+-**WARNING**: it is better to start this project, or at least the chi-squared minimization, after having completed the python project
+-
+-c++: 1 file in claro, read it (using std library), mettere parametri in container appropriati e provate a fare il fit lineare a mano con minimizzazione dei quadrati dei tre punti di mezzo con le y tra 0 e 1000. Use the most modern c++ syntax you can; passa argomenti by ref or by const ref
+-
+-Goals and subgoals
+-- [x] create program to read 1 file
+-- [ ] update program to read all the files and store data in proper containers
+-    - [ ] update program to read only "good files"
+-- [ ] select "middle" data (!= 0 && !=1000) and fit linearly with chi-squared minimization
