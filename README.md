@@ -19,6 +19,7 @@ c++: 1 file in claro, read it (using std library), mettere parametri in containe
 
 Goals and subgoals
 - [x] create program to read 1 file
-- [ ] update program to read all the files and store data in proper containers
-  - [ ] update program to read only "good files"
+- [ ] update program to read all the files (all the absolute paths to the 
+  files) from a file that contains paths to good files only, produced by 
+  bash script or python
 - [ ] select "middle" data (!= 0 && !=1000) and fit linearly with chi-squared minimization
