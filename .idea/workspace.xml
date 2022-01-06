@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated />
+    <generated>
+      <config projectName="OOPROJECT" targetName="read_claro" />
+    </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -9,7 +11,32 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="" />
+    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion.">
+      <change afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_4.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_5.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_6.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/Offset_scan/Ch_7.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_0_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_1_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_2_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_3_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_4_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_5_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_6_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/S_curve/Ch_7_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/secondolotto_1/Station_1_11/Station_1__11_Summary/Chip_001/configrtest.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/OOPROJECT.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Renamed_read_claro_to_local__this_will_be_the_c__-dedicated_branch_I_will_be_updating_on_t.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Renamed_read_claro_to_local__this_will_be_the_c__-dedicated_branch_I_will_be_updating_on_t.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_57__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_57__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_58__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_58__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read_claro.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/read_claro.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,6 +45,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -35,12 +63,15 @@
     <option name="minorVersion" value="3.1" />
   </component>
   <component name="ProjectId" id="23KGyfvUGG3SK0iB9p5Yp98BNWx" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
@@ -49,6 +80,19 @@
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="read_claro" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OOPROJECT" TARGET_NAME="read_claro" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OOPROJECT" RUN_TARGET_NAME="read_claro">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -99,6 +143,7 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion." />
     <option name="LAST_COMMIT_MESSAGE" value="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion." />
   </component>
