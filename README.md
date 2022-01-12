@@ -1,14 +1,5 @@
 # README
 
-## python projects
-
-**GIT BRANCH OF CHOICE**: `local`
-
-- python: process all claro files and produce nice plots with a code that can run on all files
-- python: process SiPM data
-
----
-
 ## c++ projects
 
 **GIT BRANCH OF CHOICE**: `local`
