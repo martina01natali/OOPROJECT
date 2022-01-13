@@ -11,17 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QA.md" beforeDir="false" afterPath="$PROJECT_DIR$/QA.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read_claro.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/read_claro.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +77,8 @@
       <workItem from="1641476263600" duration="1195000" />
       <workItem from="1641477849082" duration="1268000" />
       <workItem from="1641734477250" duration="58000" />
-      <workItem from="1642022767452" duration="4840000" />
+      <workItem from="1642022767452" duration="5262000" />
+      <workItem from="1642067571978" duration="2000" />
     </task>
     <task id="LOCAL-00001" summary="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion.">
       <created>1641478203482</created>
@@ -96,7 +87,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641478203482</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
+      <created>1642028034134</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1642028034134</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,6 +126,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion." />
-    <option name="LAST_COMMIT_MESSAGE" value="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion." />
+    <MESSAGE value="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
+    <option name="LAST_COMMIT_MESSAGE" value="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
   </component>
 </project>
