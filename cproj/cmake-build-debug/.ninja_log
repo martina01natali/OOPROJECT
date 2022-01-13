@@ -1,0 +1,11 @@
+# ninja log v5
+1	2435	6637750694442338	CMakeFiles/read_claro.dir/read_claro.cpp.obj	a5632150fcf188d2
+2441	2791	6637750697930170	read_claro.exe	cd19539bae3c9cd3
+17	2767	6637754036326580	CMakeFiles/read_claro.dir/read_claro.cpp.obj	a5632150fcf188d2
+2768	3295	6637754041579116	read_claro.exe	cd19539bae3c9cd3
+36	2087	6637760590425342	CMakeFiles/read_claro.dir/read_claro.cpp.obj	a5632150fcf188d2
+2089	2486	6637760594418154	read_claro.exe	cd19539bae3c9cd3
+5	1574	6637761131849378	CMakeFiles/read_claro.dir/read_claro.cpp.obj	a5632150fcf188d2
+1576	1908	6637761135143221	read_claro.exe	cd19539bae3c9cd3
+5	1849	6637762691646587	CMakeFiles/read_claro.dir/read_claro.cpp.obj	a5632150fcf188d2
+1850	2200	6637762695082798	read_claro.exe	cd19539bae3c9cd3
