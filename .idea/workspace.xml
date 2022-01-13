@@ -11,7 +11,32 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
+    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
+      <change afterPath="$PROJECT_DIR$/cproj/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/QA.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/Test-file_Ch_0_offset_0_Chip_001.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/hello.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/hello_world.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/read_claro.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cproj/read_claro.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/QA.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hello.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hello_world.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproj/claro_fit.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/pyproj/claro_fit.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read_claro.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/read_claro.exe" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,6 +53,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -54,11 +87,17 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/cproj/CMakeLists.txt" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
     <property name="structure.view.defaults.are.configured" value="true" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="read_claro" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OOPROJECT" TARGET_NAME="read_claro" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OOPROJECT" RUN_TARGET_NAME="read_claro">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -78,7 +117,7 @@
       <workItem from="1641477849082" duration="1268000" />
       <workItem from="1641734477250" duration="58000" />
       <workItem from="1642022767452" duration="5262000" />
-      <workItem from="1642067571978" duration="2000" />
+      <workItem from="1642067571978" duration="8835000" />
     </task>
     <task id="LOCAL-00001" summary="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion.">
       <created>1641478203482</created>
@@ -94,7 +133,28 @@
       <option name="project" value="LOCAL" />
       <updated>1642028034134</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
+      <created>1642067641740</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1642067641740</updated>
+    </task>
+    <task id="LOCAL-00004" summary="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
+      <created>1642067663966</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1642067663966</updated>
+    </task>
+    <task id="LOCAL-00005" summary="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
+      <created>1642068032813</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1642068032813</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
