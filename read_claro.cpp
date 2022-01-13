@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-// #include <sstream>
+#include <sstream>
 #include <string>
 #include <vector>
 // #include <cstdlib>
@@ -44,8 +44,11 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     std::cout << "You entered: " << "\"" + FILEPATH + "\"\n";
 
     auto const data {readFile(FILEPATH)};
-    for (auto element : data)
-        std::cout << element << '\n';
+    for (auto line : data)
+        std::stringstream datum(line);
+	
+        while (!datum)
+			std::cout << datum << '\n';
 
     return 0;
 }
