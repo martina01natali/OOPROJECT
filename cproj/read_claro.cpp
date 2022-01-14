@@ -16,7 +16,7 @@
  * *UPDATE* needs to be corrected to remove the cout output and store tokens
  * from string in a proper container.
  */
-void tokenize(std::string const& s, std::string const& del)
+void ssplit(std::string const& s, std::string const& del)
 {
     int start = 0;
     int end = s.find(del);
