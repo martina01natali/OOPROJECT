@@ -14,5 +14,11 @@ Goals and subgoals
   files) from a file that contains paths to good files only, produced by
   bash script or python~
 - [x] put data in a vector
-- [ ] divide data in vectors for x, y1, y2
+- [x] divide data in vectors for x, y1, y2
 - [ ] select "middle" data (!= 0 && !=1000) and fit linearly with chi-squared minimization
+- [ ] construct header file and start building claro class for manipulation 
+  of files
+- [ ] implement data in a struct/class
+  - [ ] metadata could be put in a struct
+  - [ ] data could be put in a class with private and public functions for 
+    fitting, constructors, getters, setters, etc...

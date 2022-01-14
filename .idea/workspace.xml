@@ -11,31 +11,21 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array.">
-      <change afterPath="$PROJECT_DIR$/cproj/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/QA.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/Test-file_Ch_0_offset_0_Chip_001.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/hello.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/hello_world.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/read_claro.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cproj/read_claro.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="1af9f6c1-8825-47c8-bd35-726ecf489c53" name="Changes" comment="renamed function tokenize to ssplit">
+      <change afterPath="$PROJECT_DIR$/cproj/claro.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_57_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_57__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_58_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_01_2022_14_58__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/read_claro.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hello.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hello_world.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproj/claro_fit.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/pyproj/claro_fit.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read_claro.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/read_claro.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/QA.md" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/QA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/cmake-build-debug/.ninja_deps" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/cmake-build-debug/.ninja_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/cmake-build-debug/CMakeFiles/read_claro.dir/read_claro.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/cmake-build-debug/read_claro.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/cmake-build-debug/read_claro.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cproj/read_claro.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/cproj/read_claro.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,9 +83,9 @@
     <property name="structure.view.defaults.are.configured" value="true" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="read_claro" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OOPROJECT" TARGET_NAME="read_claro" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OOPROJECT" RUN_TARGET_NAME="read_claro">
@@ -117,7 +107,8 @@
       <workItem from="1641477849082" duration="1268000" />
       <workItem from="1641734477250" duration="58000" />
       <workItem from="1642022767452" duration="5262000" />
-      <workItem from="1642067571978" duration="8835000" />
+      <workItem from="1642067571978" duration="9048000" />
+      <workItem from="1642158897215" duration="9847000" />
     </task>
     <task id="LOCAL-00001" summary="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion.">
       <created>1641478203482</created>
@@ -154,7 +145,28 @@
       <option name="project" value="LOCAL" />
       <updated>1642068032813</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="added function to tokenize strings to read_claro. need to update to put tokens in proper container. Then build vectors of data and then go on on README.">
+      <created>1642077040285</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1642077040285</updated>
+    </task>
+    <task id="LOCAL-00007" summary="added function to tokenize strings to read_claro. need to update to put tokens in proper container. Then build vectors of data and then go on on README.">
+      <created>1642077079607</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1642077079607</updated>
+    </task>
+    <task id="LOCAL-00008" summary="renamed function tokenize to ssplit">
+      <created>1642159001810</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1642159001810</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -171,7 +183,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="local" />
                       </list>
                     </value>
                   </entry>
@@ -182,11 +194,28 @@
         </entry>
       </map>
     </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="local" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Renamed read_claro to local: this will be the c++-dedicated branch I will be updating on the local machine only. Automatically added files from CLion." />
     <MESSAGE value="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
-    <option name="LAST_COMMIT_MESSAGE" value="read_claro now reads a single file and puts everything into a std::vector of strings. Need to update by: deviding string into floats, separating metadata, storing x y1 y2 data in multidim array." />
+    <MESSAGE value="added function to tokenize strings to read_claro. need to update to put tokens in proper container. Then build vectors of data and then go on on README." />
+    <MESSAGE value="renamed function tokenize to ssplit" />
+    <option name="LAST_COMMIT_MESSAGE" value="renamed function tokenize to ssplit" />
   </component>
 </project>
