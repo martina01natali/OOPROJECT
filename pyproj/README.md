@@ -1,18 +1,22 @@
 # Things to do and not to get lost around codes
 
-## Goals
+## Related projects/goals
+- [ ] build matplotlib or plotting guide (e.g. as a notebook or md file)
+- [x] implement git version control and transport your project on main GIT repo
 
+## Goals
+### process_claro
 - [x] produce claro_files.txt with paths to good files (process_claro_loop)
 - [x] produce bad_files.txt with paths to bad files
-- [ ] understand what data you need for fitting and make a list of them --> look at plot_fit_claro-py in materiale_tom
+- [x] understand what data you need for fitting and make a list of them --> look at plot_fit_claro-py in materiale_tom
 - [ ] produce plot of a single file
     - [x] make sure ticks of y axes are manually aligned
     - [x] make sure it can work an all files
-    - [ ] bring metadata from fileinfos dict down to plotting: how? you tell me: by search?
-    - [ ] add annotations
-    - [ ] add fit parameters+errors
-    - [ ] use metadata to write correct title for plot
-    - [ ] font of ticks is all wrong
+    - [x] bring metadata from fileinfos dict down to plotting
+    - [x] add annotations
+    - [x] add fit parameters+errors
+    - [x] use metadata to write correct title for plot
+    - [ ] sistemare font of axes' names and annotations
 - [ ] implement object-orientation (make classes and functions)
     - [x] make the plot a function
     - [x] produce plots with automatic loop, and choose different plots with different methods defined in a single class
@@ -21,16 +25,17 @@
  
 - [x] merge process_claro_loop and claro_fit_single
 
-## Related projects/goals
-- [ ] build matplotlib or plotting guide (e.g. as a notebook or md file)
-- [x] implement git version control and transport your project on main GIT repo
+### SiPM
+- [ ] 
+    - [ ] 
+
 
 ####################################################################
 ## Object-orientation
 
 Follow strategy: 1 function = 1 action
 
-### Structure
+### Structure/header
 
 ```python
 def find_paths(TDIR, DIRPATH, FILEPATH)
