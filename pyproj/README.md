@@ -4,7 +4,6 @@
 - [ ] build matplotlib or plotting guide (e.g. as a notebook or md file)
 - [x] implement git version control and transport your project on main GIT repo
 
-
 ## Goals
 ### process_claro
 - [x] produce claro_files.txt with paths to good files (process_claro_loop)
