@@ -7,27 +7,31 @@
 #include <stdio.h>
 // #include <cstdlib>
 
+using namespace std;
+
 ///////////////////////////////////////////////////////////////////////////////
 /*
- * The tokenize function takes any string and tokenizes it by any std::string
+ * The ssplit function takes any string and tokenizes it by any std::string
  * delimiter provided. WARNING: doesn't work with char standard delimiters
- * such as '\t', '\n', etc...
- * *EDIT* to use char delimiters just use damn ""
- * *UPDATE* needs to be corrected to remove the cout output and store tokens
- * from string in a proper container.
+ * such as '\t', '\n', etc... : to use char delimiters just use damn "".
+ * The function returns a vector of strings containing each token that comes
+ * from the splitting of the string.
  */
-void ssplit(std::string const& s, std::string const& del)
+auto ssplit(std::string const& s, std::string const& del)
 {
     int start = 0;
     int end = s.find(del);
+    std::vector<std::string> tokens;
+
     while (end != -1)
     {
-        // output here is on screen
-        std::cout << s.substr(start, end-start) << del;
+        tokens.push_back(s.substr(start, end - start));
         start = end + del.size();
         end = s.find(del, start);
     }
-    std::cout << s.substr(start, end-start) << std::endl;
+    tokens.push_back(s.substr(start, end - start));
+
+    return tokens;
 }
 ///////////////////////////////////////////////////////////////////////////////
 /*
@@ -61,6 +65,7 @@ auto readFile(const std::string& FILE)
         if(line.size() != 0)
         {
             data.push_back(line);
+            cout << line <<'\n';
         }
     }
     return data;
@@ -71,23 +76,46 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
             // function main(). Not doing it leads to the error "undefined reference to `WinMain'".
 {
     // User control section
-    std::cout << "Enter path to file to process\n";
+    std::cout   << "Enter path to file to process\n";
     std::string FILEPATH {};
-    std::cin >> FILEPATH;
-    std::cout << "You entered: " << "\"" + FILEPATH + "\"\n";
+    std::cin    >> FILEPATH;
+    std::cout   << "You entered: " << "\"" + FILEPATH + "\"\n";
 
-    auto const data {readFile(FILEPATH)};
-    for (auto const element : data) // each element is a line of the file
-        std::cout << element << '\n';
+    // now need to get each line
+    auto const  lines {readFile(FILEPATH)};
 
-    // now need to parse each line and split it by tabs
+    int                 i {}; // counter for lines
+    std::vector<float>  meta; // containers for data
+    std::vector<float>  x;
+    std::vector<float>  y;
+    std::vector<float>  y1;
 
-    std::vector<float> meta;
-    for(int i {0}; i<10; i++) {
-        std::cout << "Data is: " << data.at(i) << '\n';
-        meta.push_back(std::stof(data.at(i)));
-        //std::cout << "Meta is:\n" << meta.at(i) << '\n';
+    // take each line of the txt file as element
+    for (auto const line : lines)
+    {
+        // split each element in its tokens
+        auto    tokens = ssplit(line, "\t");
+        int     j {}; // counter for tokens=columns
+
+        for (auto token : tokens)
+        {
+            auto datum = std::stof(token);
+            // if tokens belong to first two lines, put in vector of metadata
+            // else put in x, y1, y2 vectors depending on column they belong to
+            if (i<2)
+                meta.push_back(datum);
+            else
+            {
+                if (j==0)       // column 0
+                    x.push_back(datum);
+                else if (j==1)  // column 1
+                    y.push_back(datum);
+                else if (j==2)  // column 2
+                    y1.push_back(datum);
+            }
+            j++;
+        }
+        i++;
     }
-
     return 0;
 }
