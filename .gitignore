@@ -1,3 +1,7 @@
 # List of paths to ignore in sync
-# C:\Users\MARTINA\Desktop\OOPROJECT\.gitignore
-.\desktop.ini
+
+# Config files
+*/desktop.ini
+
+# Heavy loads
+pyproj/branch_sipm/Data/*
