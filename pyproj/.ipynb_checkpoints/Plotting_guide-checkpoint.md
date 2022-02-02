@@ -7,3 +7,4 @@
 [Figure doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html)
 []()
 []()
+

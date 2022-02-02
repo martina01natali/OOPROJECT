@@ -7,3 +7,16 @@
 [Figure doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html)
 []()
 []()
+
+## Scatterplot
+
+```python
+import matplotlib as mplt
+from matplotlib import pyplot as plt
+import seaborn
+
+# Basic scatterplot
+plt.scatter(x, y)
+```
+
+
