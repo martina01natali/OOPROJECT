@@ -29,6 +29,8 @@
 
 - [x] merge process_claro_loop and claro_fit_single
 
+- [ ] UPDATE DOCUMENTATION OF FUNCTIONS IN claro_fit.py
+
 ####################################################################
 ## Object-orientation
 
