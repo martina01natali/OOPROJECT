@@ -9,56 +9,17 @@ from matplotlib import pyplot as plt
 from scipy.signal import argrelextrema
 
 ######################################## HEADER #################################################
-# def read_wf(fname):
-#     """Basic read function with automatic timestamp or wf file type detection.
-# 
-#     Inputs
-#     ----------
-#     - fname: relative path of the file with respect to the current working directory
-#     
-#     Returns
-#     -------
-#     Pandas' dataframe of the data provided.
-#     
-#     """
+# def read_wf(fname)
 #     
 # def analysis(wf_table, meta, timestamp_table custom_n_events=1000, time_adjust=True,
 #              threshold=0.006, distance=50, many_minima=6250,
-#              plot=False, save_plot=False):
-#     """Function to analyze waveform data and locate clean signal peaks.
+#              plot=False, save_plot=False)
 #     
-#     This function finds all the minima in each waveform (wf) and selects the "good ones" (clean_min) based on
-#     threshold (V) and distance (#). The resulting dataframe has a column "code" that indicates if
-#     a clean_min belongs to a good or bad wf: bad wfs are the ones containing a number of relative minima
-#     bigger than many_minima or that contain -inf saturated data. Notice that the "good" or "bad" coding
-#     makes sense for discriminating between equally clean_min only: discrimination is not provided for
-#     minima that are not considered to be "good" signal.
-#    
-#    --------
-#    Returns:
-#    - copy of original dataframe with added columns of minima (total) and clean minima (based
-#        on threshold and distance)
-#     
-#     """
-#     
-# def analysis_delta_t(analyzed_wf, meta,
-#                     noise_list=['primary dark counts', 'delayed crosstalk', 'crosstalk', 'afterpulses'],
-#                     crosstalk_thr=10e-3, delayed_cross_thr=6e-6,
-#                     ):
-#     """Function to polish the dataframe returned from the analysis function and discriminate between noise.
-#     
-#     Returns
-#     -------
-#     - dataframe with columns "Delta T (s)" and "Amplitude (V)" that can be used for 2D plotting
-#     - updated metadata
-#     """
+# def analysis_delta_t(analyzed_wf, meta, crosstalk_thr=10e-3, delayed_cross_thr=6e-6)
 # 
 # def plot_2d(data, sns_palette='deep', title='2D plot',
 #             show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
-#             **kwargs,):
-#     """2D plot with amplitude (V) vs time delta (s) scatterplot and kernel density estimation.
-#     
-#     """
+#             **kwargs,)
 # 
 #################################################################################################
 
@@ -143,12 +104,12 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
    
    ------
    Input:
-   - timestamp_table: pandas.DataFrame
-       Dataframe with timestamps
    - wf_table: pandas.DataFrame
        Dataframe with waveforms in list mode
    - meta: dict
        Dictionary with metadata of wf_table
+   - timestamp_table: pandas.DataFrame
+       Dataframe with timestamps
    - custom_n_events: int, default 1000
        Number of events to analyze (starts from the first waveform in any case)
    - time_adjust: bool, default True

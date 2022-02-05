@@ -2,18 +2,20 @@
 
 # import argparse
 import os
-import fnmatch
 import re
-import pandas as pd
+import time
+import fnmatch
 import numpy as np
-from numpy.polynomial import Polynomial
+import pandas as pd
+from tqdm import tqdm
 from matplotlib import pyplot as plt
-# import time
-# from tqdm import tqdm
+from numpy.polynomial import Polynomial
+
 from iv_sipm_class import *
 
 ### TO BE ADAPTED TO YOUR FILESYSTEM ###
-BASEPATH = "/Users/luca/Downloads/HPK-R00030/"
+# BASEPATH = "/Users/luca/Downloads/HPK-R00030/"
+BASEPATH = "Data/"
 
 myfiles = {'LN2':   {'FWD': [], 'REV': []},
            'RoomT': {'FWD': [], 'REV': []} }
@@ -23,13 +25,14 @@ DIRECTIONS = ['FWD','REV']
 
 ### Prepare DICT with files to be processed
 for root, dirs, files in os.walk(BASEPATH):
+    
     if "DCR" in dirs:
         dirs.remove('DCR')
+    
     if fnmatch.fnmatch(root, "*LN2"):
-        myfiles['LN2'] = {D: [os.path.join(root, file) for file in files if file.find(D) > -1] for D in DIRECTIONS }
+        myfiles['LN2'] = {D: [os.path.join(root, file) for file in files if file.find(D) > -1] for D in DIRECTIONS}
         myfiles['LN2']['REV'].sort()
-        # ln2_files = [os.path.join(root, file) for file in files]
-        # ln2_files.sort()
+
     if fnmatch.fnmatch(root, "*RoomT"):
         myfiles['RoomT'] = {D: [os.path.join(root, file) for file in files if file.find(D) > -1] for D in DIRECTIONS }
         myfiles['RoomT']['REV'].sort()
