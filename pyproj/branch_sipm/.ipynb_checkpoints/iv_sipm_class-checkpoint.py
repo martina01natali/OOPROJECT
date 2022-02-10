@@ -5,33 +5,59 @@ from matplotlib import pyplot as plt
 import time
 from tqdm import tqdm
 
-params = {'LN2':   {'threshold': 2, 'rev_limits': (41.9,42.4), 'xlim': (40,44), 'ylim': (1e-12,1e-7), 'plt_idx': 0},
-          'RoomT': {'threshold': 1.25, 'rev_limits': (51.9,52.4), 'xlim': (50,54), 'ylim': (1e-10,1e-4), 'plt_idx': 1},
+params = {'LN2':   {'threshold': 2,
+                    'rev_limits': (41.9,42.4),
+                    'xlim': (40,44),
+                    'ylim': (1e-12,1e-7),
+                    'plt_idx': 0},
+          'RoomT': {'threshold': 1.25,
+                    'rev_limits': (51.9,52.4),
+                    'xlim': (50,54),
+                    'ylim': (1e-10,1e-4),
+                    'plt_idx': 1},
           'degree': 4
          }
 
-### TO BE COMPLETED ###
+###############################################################
 
 class iv():
+    """Class used for analysis of data from forward and reverse bias SiPM response.
     
+    """
+    
+    # This is the initializer
+    # From the init we understand that any instance will have at least some parameters linked to temperature and datafiles 
     def __init__(self, temperature, datafiles=None):
-
+        
         if datafiles is None:
             datafiles = {'FWD': [], 'REV': []}
 
+        # Definition of all the instance's attributes
         self.temperature = temperature
         self.params = params[temperature]
         self.degree = params['degree']
         self.datafiles = datafiles
+        
+        # Notice that I can define attributes of any type: a class is the definition of a custom type, and can be built on any other type of object
         self.ivf = pd.DataFrame()
         self.ivr = pd.DataFrame()
 
+        # Here I build the dataframe ivf, that is an attribute of the instance; for every acquisition I have a couple of dataframes that contain both the forward and the reversed voltage data
         for datafile in datafiles['FWD']:
+            ############# WARNING ###############
+            # datafile not defined yet
+            #####################################
             tempdf = read_df_iv(datafile)
             self.ivf = pd.concat([self.ivf, tempdf], ignore_index=True)
 
-        for datafile in reversed(datafiles['REV']): # reversed() and final break to keep only the last REV file
-        # for datafile in datafiles['REV']: # final break to keep only the first REV file
+        for datafile in reversed(datafiles['REV']):
+            ############# WARNING ###############
+            # there may be something to add or correct here
+            #####################################
+            
+            # reversed() and final break to keep only the last REV file
+            # for datafile in datafiles['REV']:
+            # final break to keep only the first REV file
             tempdf = read_df_iv(datafile)
             self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
             break
