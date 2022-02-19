@@ -13,21 +13,20 @@ from scipy import special as sp
 from matplotlib import pyplot as plt
 from numpy.polynomial import Polynomial
 
-###############################################################################
-"""
-params = {'LN2':   {'threshold': 2, 
-                    'rev_limits': (41.9,42.4),
-                    'xlim': (40,44),
-                    'ylim': (1e-12,1e-7),
-                    'plt_idx': 0},
-          'RoomT': {'threshold': 1.25,
-                    'rev_limits': (51.9,52.4),
-                    'xlim': (50,54),
-                    'ylim': (1e-10,1e-4),
-                    'plt_idx': 1},
-          'revFitDegree': 4
-         }
-"""
+
+# params = {'LN2':   {'threshold': 2, 
+#                     'rev_limits': (41.9,42.4),
+#                     'xlim': (40,44),
+#                     'ylim': (1e-12,1e-7),
+#                     'plt_idx': 0},
+#           'RoomT': {'threshold': 1.25,
+#                     'rev_limits': (51.9,52.4),
+#                     'xlim': (50,54),
+#                     'ylim': (1e-10,1e-4),
+#                     'plt_idx': 1},
+#           'revFitDegree': 4
+#          }
+
 ###############################################################################
 
 class iv():
@@ -73,13 +72,8 @@ class iv():
             self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
             break
 
-    ### Methods ###
-    
-    # magic method that can be used to impose a certain representation of the instance of the class
-    # this method is called by repr(object_name), that returns an object, and is printed out if you
-    # call print(repr(object))
-    # the str method does the same, but is intended to be human readable, whilst repr is machine-readable
-    # in fact, calling str(object) would return the printed version of repr, since str calls repr inside
+    #--------------------------------
+  
     def __repr__(self):
         return f"temperature: {self.temperature}\n" \
                f"params:      {self.params}\n" \
@@ -103,14 +97,11 @@ class iv():
             
     #--------------------------------
 
-    # Metodo della classe che performa effettivamente il fit iv forward nel nostro caso
-    # Utilizza come attributi il DataFrame dei dati, il valore di soglia dopo il quale fittare (dal dizionario)
-    # e il tipo di fit (sempre dal dizionario)
-
     def fit_ivf(self):
         """Class' method that performs fit for current vs tension (forward)
         
-        Exploits threshold of class' instance and fit type.
+        Exploits dataframe of forward data, threshold of forward data and fit type, given
+        by the params dictionary.
         
         """
         

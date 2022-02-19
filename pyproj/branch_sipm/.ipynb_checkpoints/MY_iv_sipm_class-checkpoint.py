@@ -48,8 +48,8 @@ class iv():
         self.revFitDegree = params['revFitDegree']
         self.datafiles = datafiles
         
-        self.ivf = pd.DataFrame() #empty attributes, only fixing the type
-        self.ivr = pd.DataFrame() #empty attributes, only fixing the type
+        self.ivf = pd.DataFrame() #empty attribute, only fixing the type
+        self.ivr = pd.DataFrame() #empty attribute, only fixing the type
         
         for datafile in datafiles['FWD']:
             tempdf = read_df_iv(datafile)
@@ -92,7 +92,7 @@ class iv():
             
     #--------------------------------
 
-    # Metodo della classe che performa effettivamente il fit nel nostro caso (corrente vs tensione)
+    # Metodo della classe che performa effettivamente il fit iv forward nel nostro caso
     # Utilizza come attributi il DataFrame dei dati, il valore di soglia dopo il quale fittare (dal dizionario)
     # e il tipo di fit (sempre dal dizionario)
 
@@ -117,8 +117,8 @@ class iv():
         # extract the coefficients of the fit
         self.fitf = self.fitf.assign( I = lambda x: Polynomial(fit_par.convert().coef)(x.V) )
 
-        # print(fit_par)
-        # print(fit_extra)
+        print(fit_par)
+        print(fit_extra)
         
         # the quenching resistance is computed from the Ohm's law, as the inverse of the
         # proportionality constant between current and voltage
@@ -167,6 +167,7 @@ class iv():
         ##################### UPDATES TO MAKE #################################
         # - [ ] maximize derivative norm_dIdV
         # - [ ] get point of maximum = breakdown voltage (now is NaN :) )
+        # THIS IS DONE WITH THE PLOT plot_ivr
         #######################################################################
         
         self.Vbd = [np.nan,np.nan] # breakdown voltage as an attribute
@@ -197,7 +198,7 @@ class iv():
         
     #--------------------------------
 
-    def plot_ivf(self,temperature,ax,show=True):
+    def plot_ivf(self,temperature,ax):
         """Class' method: plot of forward, current vs voltage scatterplot and fit.
         
         The figure ax is provided as an argument.
@@ -208,19 +209,22 @@ class iv():
         ax[0].plot(self.fitf.V, self.fitf.I, color='darkred') # fit curve
         
         # Creiamo anche un testo, che posizioniamo in alto a sx (coordinate relative) con la resistenza di quenching
-        ax[0].text(0.1,0.8,r'$R_q=$'+'{:.2f}'.format(self.Rq[0])+r' $\Omega$', transform=ax[0].transAxes,fontsize=12, color='darkred')
+        ax[0].text(0.1,0.8,
+                   r'$R_q=$'+'({:.2f}'.format(self.Rq[0])+r'$\pm$'+'{:.0e})'.format(self.Rq[1])\
+                   + r' $\Omega$',
+                   transform=ax[0].transAxes,
+                   fontsize=12,
+                   color='darkred')
         
         ax[0].set_ylabel("Current (A)")
         ax[0].set_xlabel("Voltage (V)")
         ax[0].grid(True)
         ax[0].set_title(f"FWD @{self.temperature}")
         
-        if show==True: plt.show()
-
     #--------------------------------
 
-    def plot_ivr(self,temperature,ax,show=True):
-        """Class' method: plot of reversed, current vs voltage scatterflot and fit.
+    def plot_ivr(self,temperature,ax):
+        """Class' method: plot of reversed, current vs voltage scatterplot and fit.
         
         """
         
@@ -235,24 +239,21 @@ class iv():
         ax[1].set_ylim(self.params['ylim'])
         ax[1].grid(True)
         ax[1].set_title(f"REV @{self.temperature}")
-        
+
         ax_twin = ax[1].twinx()
         ax_twin.tick_params(axis='y', colors='darkgreen') # different color for left y axis
         
         # Plot on the same graph the fitted normalized derivative
         ax_twin.scatter(self.fitr.V,self.fitr.norm_dIdV, marker='.', s=5, color='darkgreen')
         ax_twin.set_ylabel(r"i$^{-1}$$\frac{dI}{dV}$ (V$^{-1}$)", color='darkgreen')
-
-        ##################### UPDATES TO MAKE #################################
-        # - [ ] 
-        # - [ ] 
-        #######################################################################
         
         # Per il fit sulle -I dI/dV definiamo una sottotabella intorno al massimo valore di I^-1 dI/dV
         # New dataframe _fit with values   
         self.norm_dIdV_fit = pd.DataFrame(
-            self.fitr[ self.fitr.norm_dIdV > self.fitr.norm_dIdV.max()*0.2 ].copy(),
+            self.fitr[ self.fitr.norm_dIdV > self.fitr.norm_dIdV.max()*0.5 ].copy(),
         )
+        # print(self.norm_dIdV_fit.columns)
+        # print(len(self.norm_dIdV_fit))
                     
         # Inoltre, voglio eliminare i valori estremi
         # Prima di tutto, definisco un'ulteriore colonna dove calcolo le differenze rispetto ai valori vicini
@@ -265,8 +266,9 @@ class iv():
         diff_list = list(np.diff(self.norm_dIdV_fit['norm_dIdV'][:-1]) - np.diff(self.norm_dIdV_fit['norm_dIdV'][1:]))
         
         # There's a problem in matching the index length and the number of values in the list
-        # to be honest I just don't know way 
-        diff_list = [0] + diff_list + [0] # WHAT IS THAAAT
+        # to be honest I just don't know why
+        # UPDATE: solved problem by passing to diff a list of values instad of a series: self.norm_dIdV_fit['norm_dIdV']
+        diff_list = [0] + diff_list + [0] # WHAT IS THAAAT # BEAUTIFUL
         self.norm_dIdV_fit['diff'] = diff_list
         
         # Poi uso questo parametro per rimuovere i valori troppo diversi dai vicini
@@ -280,8 +282,9 @@ class iv():
         # the range of the methods that can be used upon the column
         
         self.norm_dIdV_fit = self.norm_dIdV_fit[self.norm_dIdV_fit['diff'].abs() < 5]
-        print(self.norm_dIdV_fit.columns)
-        print(len(self.norm_dIdV_fit))
+        # CHECK
+        # print(self.norm_dIdV_fit.columns)
+        # print(len(self.norm_dIdV_fit))
         
         #######################################################################
         # The goal is to fit the points of the normalized derivative that are near its max
@@ -312,36 +315,34 @@ class iv():
                 self.norm_dIdV_fit.V.max(),
             ]
         ]
-        
-        # GUESSES = [  ]
-        
+                
         # Ora possiamo chiamare la funzione curve_fit del pacchetto optimize di scipy, che fitta i parametri della nostra gaussiana sulle nostre x (V) e y (I^-1 dI/dV)..
         # ..e restituisce i parametri (popt) e la matrice di covarianza (pcov)
         
-        popt, pcov = scipy.optimize.curve_fit(skew_gauss, self.norm_dIdV_fit.V, self.norm_dIdV_fit.norm_dIdV, maxfev=1000, bounds=fit_bounds)
-            # p0 = GUESSES,)
+        popt, pcov = scipy.optimize.curve_fit(skew_gauss,
+                                              self.norm_dIdV_fit.V,
+                                              self.norm_dIdV_fit.norm_dIdV,
+                                              bounds=fit_bounds) # maxfev=1000, p0 = GUESSES
         
         # Disegnamo ora la nostra gaussiana, ottenendo le y dalla funzione gaussiana coi valori di A, mean, e devst ottenuti dal fit
         A, mean, dev, alpha, c = popt[0], popt[1], popt[2], popt[3], popt[4]
-        print(A, mean, dev, alpha, c)
+        # print("Skew gaussian fit parameters:\n", A, mean, dev, alpha, c, "\n")
         
-        self.norm_dIdV_fit['gauss'] = skew_gauss(self.norm_dIdV_fit.V, A, mean, dev, alpha, c)
-        ax_twin.plot(self.fitr.V, self.norm_dIdV_fit.gauss, linewidth=1, color='darkorange')
-        # self.Vdb = [mean, dev]
+        # Build the gaussian using all the more x points that you can 
+        self.norm_dIdV_fit['gauss'] = skew_gauss(self.fitr.V, A, mean, dev, alpha, c)
         
-        ##################### UPDATES TO MAKE #################################
-        # - [ ] build x and y for gaussian
-        # - [x] check gaussian "skew_gauss" documentation
-        # - [x] build skew_gauss cause it is not defined any-damn-where
-        #######################################################################
+        
+        ax_twin.plot(self.norm_dIdV_fit.V, self.norm_dIdV_fit.gauss, linewidth=1, color='darkorange')
+        self.Vbd = [mean, dev]
         
         
         # Infine, come per il plot precedente, rappresentiamo accanto alla curva la media della gaussiana,..
         # ..ovvero la tensione di breakdown
-        ax_twin.text(1.5,0.8,r'$V_b=$'+'{:.2f} V'.format(self.Vbd[0]),\
-                    transform=ax[0].transAxes,fontsize=12, color='darkorange')
-        
-        if show==True: plt.show()
+        ax_twin.text(1.3,0.8,
+                     r'$V_b=$'+'({:.2f}'.format(self.Vbd[0])+r'$\pm$'+'{:.2f})'.format(self.Vbd[1]),
+                     transform=ax[0].transAxes,
+                     fontsize=12,
+                     color='darkorange')
 
 
 # --------------- FUNCTIONS ---------------
