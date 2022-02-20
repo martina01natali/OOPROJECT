@@ -9,56 +9,17 @@ from matplotlib import pyplot as plt
 from scipy.signal import argrelextrema
 
 ######################################## HEADER #################################################
-# def read_wf(fname):
-#     """Basic read function with automatic timestamp or wf file type detection.
-# 
-#     Inputs
-#     ----------
-#     - fname: relative path of the file with respect to the current working directory
-#     
-#     Returns
-#     -------
-#     Pandas' dataframe of the data provided.
-#     
-#     """
+# def read_wf(fname)
 #     
 # def analysis(wf_table, meta, timestamp_table custom_n_events=1000, time_adjust=True,
 #              threshold=0.006, distance=50, many_minima=6250,
-#              plot=False, save_plot=False):
-#     """Function to analyze waveform data and locate clean signal peaks.
+#              plot=False, save_plot=False)
 #     
-#     This function finds all the minima in each waveform (wf) and selects the "good ones" (clean_min) based on
-#     threshold (V) and distance (#). The resulting dataframe has a column "code" that indicates if
-#     a clean_min belongs to a good or bad wf: bad wfs are the ones containing a number of relative minima
-#     bigger than many_minima or that contain -inf saturated data. Notice that the "good" or "bad" coding
-#     makes sense for discriminating between equally clean_min only: discrimination is not provided for
-#     minima that are not considered to be "good" signal.
-#    
-#    --------
-#    Returns:
-#    - copy of original dataframe with added columns of minima (total) and clean minima (based
-#        on threshold and distance)
-#     
-#     """
-#     
-# def analysis_delta_t(analyzed_wf, meta,
-#                     noise_list=['primary dark counts', 'delayed crosstalk', 'crosstalk', 'afterpulses'],
-#                     crosstalk_thr=10e-3, delayed_cross_thr=6e-6,
-#                     ):
-#     """Function to polish the dataframe returned from the analysis function and discriminate between noise.
-#     
-#     Returns
-#     -------
-#     - dataframe with columns "Delta T (s)" and "Amplitude (V)" that can be used for 2D plotting
-#     - updated metadata
-#     """
+# def analysis_delta_t(analyzed_wf, meta, crosstalk_thr=10e-3, delayed_cross_thr=6e-6)
 # 
 # def plot_2d(data, sns_palette='deep', title='2D plot',
 #             show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
-#             **kwargs,):
-#     """2D plot with amplitude (V) vs time delta (s) scatterplot and kernel density estimation.
-#     
-#     """
+#             **kwargs,)
 # 
 #################################################################################################
 
@@ -143,12 +104,12 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
    
    ------
    Input:
-   - timestamp_table: pandas.DataFrame
-       Dataframe with timestamps
    - wf_table: pandas.DataFrame
        Dataframe with waveforms in list mode
    - meta: dict
        Dictionary with metadata of wf_table
+   - timestamp_table: pandas.DataFrame
+       Dataframe with timestamps
    - custom_n_events: int, default 1000
        Number of events to analyze (starts from the first waveform in any case)
    - time_adjust: bool, default True
@@ -204,10 +165,12 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
         previous_index     = minimum_list[0]
         
         for index in minimum_list:
-            if (baseline - single_wf["CH1"].iat[index] > gap) and (index > previous_index + distance):
+            if (baseline - single_wf["CH1"].iat[index] > gap) and (index > previous_index + distance) and (single_wf["CH1"].iat[index]!=-np.inf):
                 clean_minimum_list.append(index)
-                general_clean_ampl.append(baseline - single_wf["CH1"].iat[index])
+                general_clean_ampl.append(abs(single_wf["CH1"].iat[index])-abs(baseline))
                 previous_index = index
+            elif (single_wf["CH1"].iat[index]==-np.inf) or (len(minimum_list) > many_minima):
+                bad_list.append(index)
                         
         inf_counts = 0
         inf_counts = len(single_wf[single_wf.CH1==-np.inf])
@@ -217,9 +180,11 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
         wf_index = (n*wf_datapoints)
         for index in clean_minimum_list:
             general_clean_min.append(index + wf_index)
+        for index in bad_list:
+            general_bad.append(index + wf_index)
             
-            if len(minimum_list) > many_minima or inf_counts > 0:
-                general_bad.append(index + wf_index)
+            # if len(minimum_list) > many_minima or inf_counts > 0:
+            #     general_bad.append(index + wf_index)
         
         # Plotting control (inside loop)
         if plot==True:
@@ -304,7 +269,7 @@ def analysis_delta_t(analyzed_wf, meta,
 
 #################################################################################################
 
-def plot_2d(data, sns_palette='deep', title='2D plot',
+def plot_2d(data, meta, sns_palette='deep', title='2D plot',
             show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
             **kwargs,):
     """2D plot with amplitude (V) vs time delta (s) scatterplot and kernel density estimation.
@@ -315,6 +280,7 @@ def plot_2d(data, sns_palette='deep', title='2D plot',
     from matplotlib.lines import Line2D
     
     # Preprocessing
+    dcr = meta['DCR (Hz)']
     mins = data
     n_mins = len(mins)
     noise_list_red = mins.groupby('Noise').count().index.values
@@ -351,7 +317,26 @@ def plot_2d(data, sns_palette='deep', title='2D plot',
                               markerfacecolor=palette_dict[key], markersize=8) for key in palette_dict.keys()]
     
     ax1.legend(handles=legend_scatter, loc='upper left')
-    ax2.legend(handles=legend_kde, loc='upper left') #bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    ax2.legend(handles=legend_kde, loc='upper left')
+    
+    ax1.text(.65, .8,
+              # 'N waveforms: %d\n' % meta['n events'] +\
+             'N good events: %d\n' % meta['n clean minima']+\
+             'N bad events: %d\n' % meta['n bad minima']+\
+             '% bad events: {:.1%}\n'.format((meta['n bad minima']/meta['n clean minima']))+\
+             'Acquisition time: {:.2e} s\n'.format(meta['total acquis time (s)'])+\
+             'DCR = '+'({:.2e}'.format(dcr)+r'$\pm$'+\
+             '{:.0e}) Hz'.format(meta['n bad minima']/meta['n clean minima']*dcr),
+             ha='left', va='center',             
+             transform=ax1.transAxes,
+             fontsize=12,
+             color='black',
+             bbox=dict(boxstyle="round",
+                       edgecolor="black",
+                       facecolor="white",
+                       alpha=.8,
+                      )
+            )
     
     # Output control
     if show==True:
