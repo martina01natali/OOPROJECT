@@ -1,40 +1,40 @@
-# import argparse
 import os
 import re
 import time
 import math
-import scipy
 import fnmatch
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from scipy import special as sp
-# from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from numpy.polynomial import Polynomial
 
 
-# params = {'LN2':   {'threshold': 2, 
-#                     'rev_limits': (41.9,42.4),
-#                     'xlim': (40,44),
-#                     'ylim': (1e-12,1e-7),
-#                     'plt_idx': 0},
-#           'RoomT': {'threshold': 1.25,
-#                     'rev_limits': (51.9,52.4),
-#                     'xlim': (50,54),
-#                     'ylim': (1e-10,1e-4),
-#                     'plt_idx': 1},
-#           'revFitDegree': 4
-#          }
-
-###############################################################################
+# Class definition
 
 class iv():
-    """Class for analysis of iv curves of SiPMs
+    """Class for analysis of iv curves of SiPMs.
+    
+    Constructor
+    -----------
+    iv(temperature:list, datafiles:dict=None, params:dict=None)
+    
+    Attributes
+    ----------
+    iv.temperature
+    iv.params
+    iv.revFitDegree 
+    iv.datafiles
+    iv.ivf
+    iv.ivr 
+
+    
     
     """
     
-    def __init__(self, temperature, datafiles=None, params=None):
+    def __init__(self, temperature:list, datafiles:dict=None, params:dict=None):
 
         if datafiles is None:
             datafiles = {'FWD': [], 'REV': []}
@@ -66,8 +66,6 @@ class iv():
             self.ivf = pd.concat([self.ivf, tempdf], ignore_index=True)
 
         for datafile in reversed(datafiles['REV']):
-            # reversed() and final break to keep only the last REV file
-            # the read_df_iv function is a function defined outside of this class, 
             tempdf = read_df_iv(datafile) 
             self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
             break
@@ -321,10 +319,12 @@ class iv():
         # Ora possiamo chiamare la funzione curve_fit del pacchetto optimize di scipy, che fitta i parametri della nostra gaussiana sulle nostre x (V) e y (I^-1 dI/dV)..
         # ..e restituisce i parametri (popt) e la matrice di covarianza (pcov)
         
-        popt, pcov = scipy.optimize.curve_fit(skew_gauss,
-                                              self.norm_dIdV_fit.V,
-                                              self.norm_dIdV_fit.norm_dIdV,
-                                              bounds=fit_bounds) # maxfev=1000, p0 = GUESSES
+        popt, pcov = curve_fit(skew_gauss,
+                               self.norm_dIdV_fit.V,
+                               self.norm_dIdV_fit.norm_dIdV,
+                               bounds=fit_bounds,
+                               maxfev=1000,
+                              )
         
         # Disegnamo ora la nostra gaussiana, ottenendo le y dalla funzione gaussiana coi valori di A, mean, e devst ottenuti dal fit
         A, mean, dev, alpha, c = popt[0], popt[1], popt[2], popt[3], popt[4]
@@ -341,7 +341,7 @@ class iv():
         # Infine, come per il plot precedente, rappresentiamo accanto alla curva la media della gaussiana,..
         # ..ovvero la tensione di breakdown
         ax_twin.text(1.3,0.8,
-                     r'$V_b=$'+'({:.2f}'.format(self.Vbd[0])+r'$\pm$'+'{:.2f})'.format(self.Vbd[1]),
+                     r'$V_b=$'+'({:.2f}'.format(self.Vbd[0])+r'$\pm$'+'{:.2f}) V'.format(self.Vbd[1]),
                      transform=ax[0].transAxes,
                      fontsize=12,
                      color='darkorange')
