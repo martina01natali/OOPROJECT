@@ -30,5 +30,7 @@ Everything works fine.
 ------------------------------------------------------------------------------------------------
 
 ## branch_sipm status
-- [ ] finish review of class
-- [ ] define upgrades to make
+- [x] finish review of class
+- [x] define upgrades to make
+...
+FINISHED
