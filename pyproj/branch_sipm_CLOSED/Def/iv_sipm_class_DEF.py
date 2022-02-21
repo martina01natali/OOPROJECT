@@ -94,11 +94,15 @@ class iv():
         for datafile in datafiles['FWD']:
             tempdf = read_df_iv(datafile)
             self.ivf = pd.concat([self.ivf, tempdf], ignore_index=True)
-
+        
         for datafile in reversed(datafiles['REV']):
-            tempdf = read_df_iv(datafile)
-            self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
-            break
+            answ = input(f"You are working on the REV file {datafile}. Do you want to proceed? (y/n) (n will make you choose another file)")
+            if answ=='y':
+                tempdf = read_df_iv(datafile)
+                self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
+                break
+            else:
+                continue
 
     #--------------------------------
 
