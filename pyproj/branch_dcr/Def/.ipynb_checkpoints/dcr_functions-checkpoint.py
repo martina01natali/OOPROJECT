@@ -21,7 +21,7 @@ from scipy.signal import argrelextrema
 #             show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
 #             **kwargs,)
 # 
-#################################################################################################
+###############################################################################
 
 def read_wf(fname):
     """Basic read function with automatic timestamp or wf file type detection.
@@ -88,11 +88,13 @@ def read_wf(fname):
     else:
         raise NameError("Please provide the path to a waveform or timestamp comma-separated file (.csv).")
 
-#################################################################################################
+        
+###############################################################################
+
 
 def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=True,
              threshold=0.006, distance=50, many_minima=6250,
-             plot=False, save_plot=False):
+             plot=False, save_plot=False, save_format='png'):
     """Function to analyze waveform data and locate clean signal peaks.
     
     This function finds all the minima in each waveform (wf) and selects the "good ones" (clean_min) based on
@@ -128,6 +130,8 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
    - plot: bool, default False
        If True, plot the scatterplot of the waveforms with the relative minima in a
        recursive way
+    - save_plot: bool, default False
+       If True, saves the plot in the cwd with format provided by the string save_format.
    
    --------
    Returns:
@@ -144,13 +148,13 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
     copy = wf_table.copy()
     general_clean_ampl = []
     general_clean_min = []
-    general_bad = []
+    general_code_list = []
     time_list = []
     N_bad_wf = 0
         
     for n in range(N_of_events):
         print("Analysis of event number " + str(n+1), end='\r') #'\r' overwrites output
-        event_name = 'Event_' + str(n) + '.png'
+        event_name = 'Event_' + str(n) + '.' + save_format
         
         if time_adjust == True:
             copy["TIME"].loc[wf_datapoints*n: (wf_datapoints*(n+1))-1] += timestamp_table.at[n,"Timestamp"]            
@@ -165,75 +169,96 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
         previous_index     = minimum_list[0]
         
         for index in minimum_list:
-            if (baseline - single_wf["CH1"].iat[index] > gap) and (index > previous_index + distance) and (single_wf["CH1"].iat[index]!=-np.inf):
+            if (baseline - single_wf["CH1"].iat[index] > gap)\
+            and (index > previous_index + distance)\
+            and (single_wf["CH1"].iat[index]!=-np.inf)\
+            and (len(minimum_list) < many_minima):
+                general_code_list.append('good')
                 clean_minimum_list.append(index)
                 general_clean_ampl.append(abs(single_wf["CH1"].iat[index])-abs(baseline))
                 previous_index = index
-            elif (single_wf["CH1"].iat[index]==-np.inf) or (len(minimum_list) > many_minima):
-                bad_list.append(index)
-                        
-        inf_counts = 0
-        inf_counts = len(single_wf[single_wf.CH1==-np.inf])
-        if inf_counts > 0:
-            N_bad_wf += 1
         
         wf_index = (n*wf_datapoints)
         for index in clean_minimum_list:
             general_clean_min.append(index + wf_index)
-        for index in bad_list:
-            general_bad.append(index + wf_index)
             
-            # if len(minimum_list) > many_minima or inf_counts > 0:
-            #     general_bad.append(index + wf_index)
+        inf_counts = len(single_wf[single_wf.CH1==-np.inf])
+        if (inf_counts == 0)\
+        and (len(minimum_list) < many_minima)\
+        and (len(clean_minimum_list)):
+            code = 'good'
+        else:
+            N_bad_wf += 1
+            code = 'bad'
         
-        # Plotting control (inside loop)
-        if plot==True:
-            single_wf.loc[:,'min'] = single_wf.iloc[minimum_list]['CH1']
-            single_wf.loc[:,'clean_min'] = single_wf.iloc[clean_minimum_list]['CH1']
-            plt.plot(single_wf["TIME"], single_wf['CH1'], linestyle="-", linewidth=1)
-            plt.scatter(single_wf["TIME"], single_wf['min'], color="darkred")
-            plt.scatter(single_wf["TIME"], single_wf['clean_min'], color="green")
-            plt.axhline(baseline, c='b')
-            plt.show()
-            
+        # Plotting control (for single_wf)  
+        fig, ax = plt.subplots()
+        single_wf.loc[:,'min'] = single_wf.iloc[minimum_list]['CH1']
+        single_wf.loc[:,'clean_min'] = single_wf.iloc[clean_minimum_list]['CH1']
+        ax.plot(single_wf["TIME"], single_wf['CH1'], linestyle="-", linewidth=1)
+        ax.scatter(single_wf["TIME"], single_wf['min'], color="darkred")
+        ax.scatter(single_wf["TIME"], single_wf['clean_min'], color="green")
+        ax.axhline(baseline, c='b')
+        ax.set_title(f'Waveform analysis: event n_{n}')
+        ax.set_xlabel('Relative time (s)')
+        ax.set_ylabel('Amplitude (V)')
+        ax.text(0.8,0.8,
+                code,
+                transform=ax.transAxes,
+                fontsize=12,
+                color='black',
+                bbox=dict(boxstyle="round",
+                          edgecolor="black",
+                          facecolor="palegreen" if code=='good' else "lightsalmon",
+                          alpha=.8),
+               )
+        
         if save_plot==True:
-            figure_path = os.path.join(os.path.join(os.getcwd(),'grafici'), event_name)
-            plt.savefig(figure_path)
-            plt.close()
+            data_origin = meta['path'].split('\\')[-1].split('_')[-2]
+            try:
+                figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
+                plt.savefig(figure_path)
+            except FileNotFoundError:
+                print(f'Creating "Plots_{data_origin}" subfolder in your current working directory...\n')
+                os.mkdir(f'Plots_{data_origin}')
+                figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
+                plt.savefig(figure_path)
+            finally:
+                if plot==False: plt.close()
     
     # Metadata update
     total_time = sum(time_list)
     meta['total acquis time (s)'] = total_time
-    meta['n clean minima'] = len(general_clean_min)-len(general_bad)
-    meta['n bad minima'] = len(general_bad)
+    meta['n clean minima'] = len(general_clean_min)
+    meta['% bad wf'] = N_bad_wf/custom_n_events*100
     meta['DCR (Hz)'] = meta["n clean minima"]/total_time
     
     # Printed output
     print('\nAnalysis completed.')
-    print('Number of clean minima found: ', len(general_clean_min)-len(general_bad))
-    print('Fraction of waveforms with too many minima or -inf data ("bad_wf") on total: %s%%' % format(N_bad_wf/custom_n_events*100,".2f"))
+    print('Number of clean minima found: %d' % len(general_clean_min))
+    print('Fraction of waveforms with too many minima or -inf data ("bad_wf") on total: {:.1%}'.format(N_bad_wf/custom_n_events))
     print('Total acquisition time: {0:0.3e} s'.format(total_time))
     print('Estimated DCR: {0:0.3e} Hz'.format(meta["n clean minima"]/total_time))
         
     # Return control
-    clean_ampl = pd.DataFrame(general_clean_ampl, index=general_clean_min, columns=['ampl_min'])
-    if many_minima < 6250 or len(general_bad) > 0:
-        bad_list = ['bad_wf' for item in general_bad]
-        bad = pd.DataFrame(bad_list, index=general_bad, columns=['code'])
+    clean_ampl = pd.DataFrame(
+        {'ampl_min':general_clean_ampl, 'code':general_code_list},
+        index=general_clean_min)
         
     copy.loc[:,'clean_min'] = copy.iloc[general_clean_min]['CH1']
     copy = copy.join(clean_ampl)
-    copy = copy.join(bad)
-    copy.code.fillna(value='good', inplace=True)
+    copy.code.fillna(value='bad', inplace=True)
     copy['wfID'] = np.array(range(len(copy))) // 6250
     copy.set_index('wfID', append=True, inplace=True)
     print("Process completed in %s s." % (format(time.time()-start_time,".2f")))
     return copy, meta
 
-#################################################################################################
+
+###############################################################################
+
 
 def analysis_delta_t(analyzed_wf, meta,
-                    crosstalk_thr=10e-3, delayed_cross_thr=6e-6,
+                    crosstalk_thr=12e-3, delayed_cross_thr=6e-6,
                     ):
     """Function to polish the dataframe returned from the analysis function and discriminate between noise.
     
@@ -244,15 +269,15 @@ def analysis_delta_t(analyzed_wf, meta,
     """
     
     def noise_discrimination(df, crosstalk_thr, delayed_cross_thr):
-        
-            primary_mean = df.groupby(by=[df['Amplitude (V)'] < crosstalk_thr]).get_group(True)['Amplitude (V)'].mean()
-            primary_std = df.groupby(by=[df['Amplitude (V)'] < crosstalk_thr]).get_group(True)['Amplitude (V)'].std()
-            
-            df['Noise'] = (
-                np.where(
-                    df['Delta T (s)'] < delayed_cross_thr, 'delayed crosstalk',
-                    np.where(df['Amplitude (V)'] > crosstalk_thr , 'crosstalk', 'primary dark counts')))
-            df.loc[df['Amplitude (V)'] < (primary_mean-primary_std)]['Noise'].apply(lambda x : 'afterpulses')
+
+            df.loc[df['Amplitude (V)'] < crosstalk_thr, 'Noise'] = 'primary dark counts'
+            df.loc[(df['Amplitude (V)'] < crosstalk_thr)\
+                   & (df['Delta T (s)'] < (delayed_cross_thr)),
+                   'Noise'] = 'afterpulse'
+            df.loc[df['Amplitude (V)'] >= crosstalk_thr, 'Noise'] = 'crosstalk'
+            df.loc[(df['Amplitude (V)'] >= crosstalk_thr)\
+                   & (df['Delta T (s)'] < (delayed_cross_thr)),
+                   'Noise'] = 'delayed crosstalk'
 
             return df
 
@@ -267,12 +292,14 @@ def analysis_delta_t(analyzed_wf, meta,
     
     return mins, meta
 
-#################################################################################################
+
+###############################################################################
+
 
 def plot_2d(data, meta, sns_palette='deep', title='2D plot',
-            show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
+            show=True, save=False, save_path='Amplitude_vs_dt', save_extension='pdf',
             **kwargs,):
-    """2D plot with amplitude (V) vs time delta (s) scatterplot and kernel density estimation.
+    """2D plot of DCR with amplitude (V) vs time delta (s) scatterplot and kernel density estimation.
     
     """
 
@@ -284,6 +311,7 @@ def plot_2d(data, meta, sns_palette='deep', title='2D plot',
     mins = data
     n_mins = len(mins)
     noise_list_red = mins.groupby('Noise').count().index.values
+    data_origin = meta['path'].split('\\')[-1].split('_')[-2]
     
     deep_cmap = sns.color_palette(sns_palette, 10)
     palette = sns.color_palette([deep_cmap[i] for i in range(len(noise_list_red))])
@@ -305,7 +333,7 @@ def plot_2d(data, meta, sns_palette='deep', title='2D plot',
                 edgecolor='white', alpha=0.7, palette=sns_palette,
                 legend=False)
     
-    ax1.set_title(title, fontsize=14)
+    ax1.set_title(title+f'_{data_origin}', fontsize=14)
     ax1.set_xscale('log')
     ax2.set_xscale('log')
     ax2.set_ylabel('Density (%)')
@@ -320,13 +348,10 @@ def plot_2d(data, meta, sns_palette='deep', title='2D plot',
     ax2.legend(handles=legend_kde, loc='upper left')
     
     ax1.text(.65, .8,
-              # 'N waveforms: %d\n' % meta['n events'] +\
-             'N good events: %d\n' % meta['n clean minima']+\
-             'N bad events: %d\n' % meta['n bad minima']+\
-             '% bad events: {:.1%}\n'.format((meta['n bad minima']/meta['n clean minima']))+\
-             'Acquisition time: {:.2e} s\n'.format(meta['total acquis time (s)'])+\
-             'DCR = '+'({:.2e}'.format(dcr)+r'$\pm$'+\
-             '{:.0e}) Hz'.format(meta['n bad minima']/meta['n clean minima']*dcr),
+             'N good events: %d\n' % meta['n clean minima']\
+             +'Acquisition time: {:.2e} s\n'.format(meta['total acquis time (s)'])\
+             +'DCR = '+'{:.2e} Hz'.format(dcr),
+             # 'DCR = '+'({:.2e}'.format(dcr)+r'$\pm$'+'{:.0e}) Hz'.format(meta['n bad minima']/meta['n clean minima']*dcr),
              ha='left', va='center',             
              transform=ax1.transAxes,
              fontsize=12,
@@ -345,4 +370,4 @@ def plot_2d(data, meta, sns_palette='deep', title='2D plot',
         plt.close()
     
     if save==True:
-        f.savefig(save_path+save_extension)
+        f.savefig(f'{data_origin}_'+save_path+'.'+save_extension)
