@@ -25,12 +25,6 @@ from scipy.optimize import curve_fit
 # 
 # def fit_erf(x, y, META, npoints=1000)
 # 
-# def func(x, ampl, a, b)
-#     """
-#     Modified erf function with amplitude ampl and shift on the vertical axis ampl/2,
-#     inflection point at a, normalization proportional to b.
-#     Guesses may be provide as a list e.g. [AMPLITUDE, TRANSITION, AMPLITUDE/2].
-#     """
 #     
 # def fit_erf(x, y, META, npoints=1000)
 #     
@@ -38,6 +32,13 @@ from scipy.optimize import curve_fit
 #              show_scatter=True, show_fit=True, show_transition=True,
 #              save=False, save_path='.\plot', save_format='pdf', show=True,
 #              **kwargs)
+#
+# def func(x, ampl, a, b)
+#     """
+#     Modified erf function with amplitude ampl and shift on the vertical axis ampl/2,
+#     inflection point at a, normalization proportional to b.
+#     Guesses may be provide as a list e.g. [AMPLITUDE, TRANSITION, AMPLITUDE/2].
+#     """
 # 
 #################################################################################################
 
@@ -179,6 +180,9 @@ def fit_erf(x, y, meta, guesses='default',
     and a code that can be 'good' or 'bad' depending on the result of the fit.
     The code is used by function plot_fit, for example, to determine whether or not to
     produce the plot of the fit.
+    If log==True produces a file log_unfit with paths to the good files whose data
+    couldn't be fitted.
+    If warnings_ignore==True doesn't print any warning but mantains the log. 
     
     Return
     ------
@@ -238,17 +242,6 @@ def fit_erf(x, y, meta, guesses='default',
             if bad_list: output.write(bad_list[0]+"\n")
         return fit_dict
 
-#################################################################################################
-
-def func(x, ampl, a, b):
-    """Modified erf function.
-    
-    Amplitude ampl and shift on the vertical axis ampl/2,
-    inflection point at a, normalization proportional to b.
-    Deafult guesses are [AMPLITUDE, TRANSITION, AMPLITUDE/2].
-    """
-    
-    return ampl/2*(1+sp.erf((x-a)/(b*np.sqrt(2))))
     
 #################################################################################################
 
@@ -257,7 +250,7 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
              show_scatter=True, show_fit=True, show_transition=True,
              save=False, save_path='.\plot', save_format='pdf', show=True,
              **kwargs):
-    """[Function documentation]
+    """Scatterplot of data, with options to plot both the erf fit and transition point.
     
     """
     
@@ -267,10 +260,11 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
     'fontsize': plt.rcParams['axes.titlesize'],
     'fontweight' : plt.rcParams['axes.titleweight'],
     'verticalalignment': 'baseline',
-    # 'horizontalalignment': plt.loc,
     }
     
-    plt.figure(figsize=(5,5), tight_layout=True)
+    # When printing on a multipage pdf, don't initialize any figure
+    # plt.figure(figsize=(5,5), tight_layout=True)
+    
     plt.title(title, fontdict=font)
     
     # Show scatterplot of data (default = True)
@@ -292,16 +286,18 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
             raise ValueError("Error: the provided fit has invalid parameters. "
                              +f"Plot {title} will not be plotted. Unfitted files' paths in log_unplot.txt\r")
     
-        # x,y data computed as a grid of npoints and using parameters of the fit
-        fit_params = metafit['params']
-        fit_errs = metafit['errors']
-        
-        xfit = np.linspace(x.min(), x.max(), npoints)
-        yfit= func(xfit, *fit_params)
+
         
                              
         # Show plot of fit (default = True)
-        if show_fit == True: 
+        if show_fit == True:
+            
+            # x,y data computed as a grid of npoints and using parameters of the fit
+            fit_params = metafit['params']
+            fit_errs = metafit['errors']
+            xfit = np.linspace(x.min(), x.max(), npoints)
+            yfit= func(xfit, *fit_params)
+            
             plt.plot(xfit, yfit, label='erf fit', zorder=1, color='r', alpha=0.8)
             plt.annotate(f"Fit parameters\nAmplitude = ({fit_params[0]:.2f}"+r" $\pm$ "+f"{fit_errs[0]:.2f})\n"
                          +f"Transition = ({fit_params[1]:.2f}"+r" $\pm$ "+f"{fit_errs[1]:.2E})\n"
@@ -326,11 +322,26 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
     except ValueError as err: 
         if interactive==True: print(err)
     
-    if save == True:
-        plt.savefig(save_path+'.'+save_format)
+    # The following lines are to uncomment when the function is used
+    # as a stand-alone, without any external way to save
     
-    if show == True:
-        plt.show()
-        plt.close()
-    else:
-        plt.close()
+    # if save == True:
+    #     plt.savefig(save_path+'.'+save_format)
+    # if show == True:
+    #     plt.show()
+    #     plt.close()
+    # else:
+    #     plt.close()
+    
+#################################################################################################
+
+def func(x, ampl, a, b):
+    """Modified erf function.
+    
+    Amplitude ampl and shift on the vertical axis ampl/2,
+    inflection point at a, normalization proportional to b.
+    Deafult guesses are [AMPLITUDE, TRANSITION, AMPLITUDE/2].
+    """
+    
+    return ampl/2*(1+sp.erf((x-a)/(b*np.sqrt(2))))
+        
