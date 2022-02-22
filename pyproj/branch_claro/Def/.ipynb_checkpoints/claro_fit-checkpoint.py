@@ -46,6 +46,18 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
              custom_n_files='all',):
     """Function that walks on all subdirectories of TDIR that match DIRPATH and FILEPATH.
     
+    Inputs
+    ------
+    TDIR: absolute path
+        Path to the top directory.
+    DIRPATH: relative path, wildcards admitted
+        Regular expression with relative path to the folders and subfolders
+        where the walk will take place.
+    FILEPATH: relative path, wildcard admitted
+        Regular expression with relative path to the files to walk on.
+    custom_n_files: int or str, default='all'
+        Arbitrary number of files to process, used for testing purposes.
+    
     Returns
     -------
     - dict containing the following keys:
@@ -76,6 +88,9 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
     
     OUTFILE = "claro_files.txt"
     OUTBAD  = 'bad_files.txt'
+    for file in [OUTFILE, OUTBAD]:
+        if os.path.isfile(file): os.remove(file)
+    
     fileinfos = dict()
     tot_counts  = 0
     good_counts = 0
@@ -84,12 +99,12 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
         if fnmatch.fnmatch(root, TDIR + DIRPATH):
             for f in files:
                 if custom_n_files!='all':
-                    if tot_counts>custom_n_files: break
+                    if tot_counts>(custom_n_files-1): break
                 if fnmatch.fnmatch(f, FILEPATH):
                     tot_counts += 1
                     thisfile = os.path.join(root,f)
                     with open(thisfile) as csvfile:
-                        print(f'Reading {thisfile}', end='\r')
+                        # print(f'Reading {thisfile}', end='\r')
                         lines = csvfile.readlines()
                         firstline = lines[0].split()
                         try:
@@ -107,26 +122,13 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
                                         'width': float(firstline[2]),
                                         }
                                 good_counts += 1
-                            with open(OUTFILE, "w+") as output:
+                            with open(OUTFILE, "a") as output:
                                 output.write(thisfile+"\n")
-                        except ValueError:
-                            print(f"ValueError: Couldn't read data in: {thisfile}. Going on...", end='\r')
-                            if os.path.isfile(OUTBAD):
-                                with open(OUTBAD, "a") as output:
-                                    output.write(thisfile+"\n")
-                            else:
-                                with open(OUTBAD, "w+") as output:
-                                    output.write(thisfile+"\n")
-                            pass
-                        except IndexError:
-                            print(f"ValueError: Bad data in: {thisfile}. First word: {lines[0].split()}. Going on...",
-                                  end='\r')
-                            if os.path.isfile(OUTBAD):
-                                with open(OUTBAD, "a") as output:
-                                    output.write(thisfile+"\n")
-                            else:
-                                with open(OUTBAD, "w+") as output:
-                                    output.write(thisfile+"\n")
+                        except (ValueError, IndexError):
+                            print(f"Error: Couldn't read data in: {thisfile}.\
+                            First word: {firstline[0]}. Going on...", end='\r')
+                            with open(OUTBAD, "a") as output:
+                                output.write(thisfile+"\n")
                             pass
     
     bad_counts = tot_counts-good_counts
@@ -139,7 +141,7 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
 
 #################################################################################################
 
-def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',):
+def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',) -> str():
     for entry in fileinfo.items():
         i = entry[1]
         if i['station']==station and i['sub']==sub and i['chip']==chip and i['ch']==ch:

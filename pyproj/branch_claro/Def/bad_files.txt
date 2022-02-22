@@ -1,1 +1,14 @@
-C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__36\Station_1__36_Summary\Chip_180\S_curve\Ch_0_offset_0_Chip_180.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_001\S_curve\Ch_8_offset_0_Chip_001.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_012\S_curve\Ch_2_offset_0_Chip_012.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_018\S_curve\Ch_1_offset_0_Chip_018.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_072\S_curve\Ch_1_offset_0_Chip_072.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_082\S_curve\Ch_1_offset_0_Chip_082.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_086\S_curve\Ch_7_offset_0_Chip_086.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_098\S_curve\Ch_6_offset_0_Chip_098.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_117\S_curve\Ch_3_offset_0_Chip_117.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_122\S_curve\Ch_1_offset_0_Chip_122.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_124\S_curve\Ch_1_offset_0_Chip_124.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_127\S_curve\Ch_1_offset_0_Chip_127.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_128\S_curve\Ch_1_offset_0_Chip_128.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_135\S_curve\Ch_1_offset_0_Chip_135.txt
+C:\Users\MARTINA\Desktop\secondolotto_1\Station_1__11\Station_1__11_Summary\Chip_147\S_curve\Ch_1_offset_0_Chip_147.txt
