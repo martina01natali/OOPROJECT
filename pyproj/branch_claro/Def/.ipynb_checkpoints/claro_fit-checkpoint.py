@@ -111,14 +111,22 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
                                 output.write(thisfile+"\n")
                         except ValueError:
                             print(f"ValueError: Couldn't read data in: {thisfile}. Going on...", end='\r')
-                            with open(OUTBAD, "w+") as output:
-                                output.write(thisfile+"\n")
+                            if os.path.isfile(OUTBAD):
+                                with open(OUTBAD, "a") as output:
+                                    output.write(thisfile+"\n")
+                            else:
+                                with open(OUTBAD, "w+") as output:
+                                    output.write(thisfile+"\n")
                             pass
                         except IndexError:
-                            print(f"ValueError: Bad data in: {thisfile}. First line: {lines[0]}. Going on...",
+                            print(f"ValueError: Bad data in: {thisfile}. First word: {lines[0].split()}. Going on...",
                                   end='\r')
-                            with open(OUTBAD, "w+") as output:
-                                output.write(thisfile+"\n")
+                            if os.path.isfile(OUTBAD):
+                                with open(OUTBAD, "a") as output:
+                                    output.write(thisfile+"\n")
+                            else:
+                                with open(OUTBAD, "w+") as output:
+                                    output.write(thisfile+"\n")
                             pass
     
     bad_counts = tot_counts-good_counts
