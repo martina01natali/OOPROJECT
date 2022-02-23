@@ -44,7 +44,8 @@ from scipy.optimize import curve_fit
 
 def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve",
              FILEPATH="Ch_*_offset_*_Chip_*.txt",
-             custom_n_files='all',):
+             custom_n_files='all',
+             log=True):
     """Function that walks on all subdirectories of TDIR that match DIRPATH and FILEPATH.
     
     Inputs
@@ -90,7 +91,7 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
     OUTFILE = "claro_files.txt"
     OUTBAD  = 'bad_files.txt'
     for file in [OUTFILE, OUTBAD]:
-        if os.path.isfile(file): os.remove(file)
+        if log==True and os.path.isfile(file): os.remove(file)
     
     fileinfos = dict()
     tot_counts  = 0
@@ -103,6 +104,7 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
                     if tot_counts>(custom_n_files-1): break
                 if fnmatch.fnmatch(f, FILEPATH):
                     tot_counts += 1
+                    print(f'Processing file n. {tot_counts}...', end='\r')
                     thisfile = os.path.join(root,f)
                     with open(thisfile) as csvfile:
                         # print(f'Reading {thisfile}', end='\r')
@@ -123,13 +125,15 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
                                         'width': float(firstline[2]),
                                         }
                                 good_counts += 1
-                            with open(OUTFILE, "a") as output:
-                                output.write(thisfile+"\n")
+                            if log==True:
+                                with open(OUTFILE, "a") as output:
+                                    output.write(thisfile+"\n")
                         except (ValueError, IndexError):
-                            print(f"Error: Couldn't read data in: {thisfile}.\
-                            First word: {firstline[0]}. Going on...", end='\r')
-                            with open(OUTBAD, "a") as output:
-                                output.write(thisfile+"\n")
+                            print(f"Error: Couldn't read data in: {thisfile}. "
+                            +f"First word: {firstline[0]}. Going on...", end='\r')
+                            if log==True:
+                                with open(OUTBAD, "a") as output:
+                                    output.write(thisfile+"\n")
                             pass
     
     bad_counts = tot_counts-good_counts
@@ -142,12 +146,14 @@ def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve
 
 #################################################################################################
 
-def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',) -> str():
+def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',) -> dict():
+    """Returns metadata of file with given chip, ch, station and sub"""
+    
     for entry in fileinfo.items():
         i = entry[1]
         if i['station']==station and i['sub']==sub and i['chip']==chip and i['ch']==ch:
             path = i['path']
-            return path
+            return i
             break
     raise NameError('No mathing file found in provided dict.')
 
@@ -198,19 +204,21 @@ def fit_erf(x, y, meta, guesses='default',
         }
     
     try:
+        if warnings_ignore==True:
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("ignore")
+                
         if guesses=='default':
             guesses=[meta['amplitude'], meta['transition'], meta['amplitude']/2]
         
         bad_list = []            
         fit_params, fit_covar = curve_fit(func, x, y, p0=guesses)
-        
-        with warnings.catch_warnings(record=True) as w:
-            if w:
-                if log==True: bad_list.append(meta['path'])
-            if warnings_ignore==True: warnings.simplefilter("ignore")
-
         fit_dev = np.sqrt(np.diag(fit_covar))
         all_params = np.append(fit_params, fit_dev)
+        
+        # Warnings catch
+        if w:
+            if log==True: bad_list.append(meta['path'])
         
         for i in all_params:
             if i == np.inf:
@@ -220,13 +228,11 @@ def fit_erf(x, y, meta, guesses='default',
         if interactive==True: print("Fit ok!")
                 
     except ValueError as err:
-        if log==True:
-            if log==True: bad_list.append(meta['path'])
+        if log==True: bad_list.append(meta['path'])
         if interactive==True: print(f'Error: {err}.\nThe fit parameters are not returned.')
             
     except RuntimeError as err:
-        if log==True:
-            if log==True: bad_list.append(meta['path'])
+        if log==True: bad_list.append(meta['path'])
         if interactive==True: print(err)
     
     else: 
@@ -238,8 +244,9 @@ def fit_erf(x, y, meta, guesses='default',
         return fit_dict
     
     finally:
-        with open("log_unfit.txt", "a") as output:
-            if bad_list: output.write(bad_list[0]+"\n")
+        if log==True:
+            with open("log_unfit.txt", "a") as output:
+                if bad_list: output.write(bad_list[0]+"\n")
         return fit_dict
 
     
@@ -286,9 +293,6 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
             raise ValueError("Error: the provided fit has invalid parameters. "
                              +f"Plot {title} will not be plotted. Unfitted files' paths in log_unplot.txt\r")
     
-
-        
-                             
         # Show plot of fit (default = True)
         if show_fit == True:
             
@@ -332,6 +336,60 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
     #     plt.close()
     # else:
     #     plt.close()
+
+#################################################################################################
+
+def hist_tw(t_list, w_list, ax):
+    
+    import scipy.stats as ss
+    from matplotlib.ticker import MaxNLocator
+    
+    annotation_kwargs = {'xy':(.1,.5), 'xycoords':'axes fraction',
+                         'bbox':dict(boxstyle="round",edgecolor="black",facecolor="white",alpha=.8)}
+    
+    # Transition histogram
+    ax[0].set_title("Transition points' histogram", fontsize=12)
+    ax[0].tick_params(axis='y', which='minor', width=0)
+    ax[0].yaxis.set_major_locator(MaxNLocator(integer=True))
+    counts, bins, pads = ax[0].hist(t_list, bins=int(np.sqrt(len(t_list))/4), density=False,
+                                color='green', label='Transition points (x)', alpha=1,
+                                log=False, rwidth=1)
+    
+    # Gaussian fit for transition widths
+    # Un-normalized gaussian is given multiplying pdf by integral of histogram
+    par = ss.norm.fit(t_list)
+    x = np.linspace(min(t_list), max(t_list), 1000)
+    fit = ss.norm.pdf(x, *par)*len(t_list)*(bins[1]-bins[0])
+    ax[0].plot(x, fit)
+    
+    ax[0].annotate(f"N entries: {len(t_list)}\n"\
+                   +"Fit type: norm\n"\
+                   +"Mean: {:.2f}\n".format(par[0])\
+                   +"Dev: {:.2f}".format(par[1]),
+                   **annotation_kwargs)
+    
+    #-----------------------------------------    
+    # Widths' histogram
+    ax[1].set_title("Widths' histogram", fontsize=12)
+    ax[1].tick_params(axis='y', which='minor', width=0)
+    ax[1].yaxis.set_major_locator(MaxNLocator(integer=True))
+    counts, bins, pads = ax[1].hist(w_list, bins=int(np.sqrt(len(w_list))/4), density=False,
+                            color='green', label='Transition points (x)', alpha=1,
+                            log=False, rwidth=1)
+    ax[1].set_ylim(1,max(counts))
+    # Gaussian fit for transition widths
+    # Un-normalized gaussian is given multiplying pdf by integral of histogram
+    par = ss.lognorm.fit(w_list)
+    x = np.linspace(min(w_list), max(w_list), 1000)
+    fit = ss.lognorm.pdf(x, *par)*len(w_list)*(bins[1]-bins[0])
+    ax[1].plot(x, fit)
+    print(*par)
+    
+    ax[1].annotate(f"N entries: {len(w_list)}\n"\
+                   +"Fit type: lognorm\n"\
+                   +"Mean: {:.2f}\n".format(par[2])\
+                   +"Dev: {:.2f}".format(par[0]),
+                   **annotation_kwargs)
     
 #################################################################################################
 
