@@ -13,7 +13,7 @@ using namespace std;
 /*
  * The ssplit function takes any string and tokenizes it by any std::string
  * delimiter provided. WARNING: doesn't work with char standard delimiters
- * such as '\t', '\n', etc... : to use char delimiters just use damn "".
+ * such as '\t', '\n', etc... : to use char delimiters just use "".
  * The function returns a vector of strings containing each token that comes
  * from the splitting of the string.
  */
@@ -62,7 +62,7 @@ auto readFile(const std::string& FILE)
     */
      while (std::getline(input, line))
     {
-        if(line.size() != 0)
+        if(line.size())
         {
             data.push_back(line);
             cout << line <<'\n';
