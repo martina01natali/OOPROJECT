@@ -341,54 +341,61 @@ def plot_fit(x, y, metafit, fileinfo, npoints=1000,
 
 def hist_tw(t_list, w_list, ax):
     
+    import math
     import scipy.stats as ss
+    import scipy.special as sp
+    from scipy.optimize import curve_fit
     from matplotlib.ticker import MaxNLocator
     
-    annotation_kwargs = {'xy':(.1,.5), 'xycoords':'axes fraction',
+    annotation_kwargs = {'xy':(.1,.7), 'xycoords':'axes fraction',
                          'bbox':dict(boxstyle="round",edgecolor="black",facecolor="white",alpha=.8)}
+    
+    #-----------------------------------------   
     
     # Transition histogram
     ax[0].set_title("Transition points' histogram", fontsize=12)
     ax[0].tick_params(axis='y', which='minor', width=0)
     ax[0].yaxis.set_major_locator(MaxNLocator(integer=True))
     counts, bins, pads = ax[0].hist(t_list, bins=int(np.sqrt(len(t_list))/4), density=False,
-                                color='green', label='Transition points (x)', alpha=1,
+                                label='Transition points (x)', alpha=.5,
                                 log=False, rwidth=1)
     
-    # Gaussian fit for transition widths
-    # Un-normalized gaussian is given multiplying pdf by integral of histogram
-    par = ss.norm.fit(t_list)
+    fit_bounds = [ [0,0,0], [sum(counts)*np.diff(bins)[0],max(bins),max(bins)] ]
+    popt, pcov = curve_fit(gauss, bins[:-1], counts, bounds=fit_bounds, maxfev=1000)
+    pdev = np.sqrt(np.diag(pcov))
+    A, mean, dev = popt[0], popt[1], popt[2]
     x = np.linspace(min(t_list), max(t_list), 1000)
-    fit = ss.norm.pdf(x, *par)*len(t_list)*(bins[1]-bins[0])
-    ax[0].plot(x, fit)
+    fit = gauss(x, A, mean, dev)
+    ax[0].plot(x, fit, c='red')
     
     ax[0].annotate(f"N entries: {len(t_list)}\n"\
-                   +"Fit type: norm\n"\
-                   +"Mean: {:.2f}\n".format(par[0])\
-                   +"Dev: {:.2f}".format(par[1]),
+                   +"Fit type: gauss"\
+                   +"\nMean: ({:.1e}".format(popt[1])+r'$\pm$'+'{:.1e})'.format(pdev[1])\
+                   +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
                    **annotation_kwargs)
     
-    #-----------------------------------------    
+    #-----------------------------------------   
+    
     # Widths' histogram
     ax[1].set_title("Widths' histogram", fontsize=12)
     ax[1].tick_params(axis='y', which='minor', width=0)
     ax[1].yaxis.set_major_locator(MaxNLocator(integer=True))
     counts, bins, pads = ax[1].hist(w_list, bins=int(np.sqrt(len(w_list))/4), density=False,
-                            color='green', label='Transition points (x)', alpha=1,
+                            label='Transition points (x)', alpha=.5,
                             log=False, rwidth=1)
-    ax[1].set_ylim(1,max(counts))
-    # Gaussian fit for transition widths
-    # Un-normalized gaussian is given multiplying pdf by integral of histogram
-    par = ss.lognorm.fit(w_list)
+    
+    fit_bounds = [ [0,0,0,0] , [sum(counts)*np.diff(bins)[0],max(bins),max(bins),np.inf] ]
+    popt, pcov = curve_fit(skew_gauss, bins[:-1], counts, bounds=fit_bounds, maxfev=1000)
+    pdev = np.sqrt(np.diag(pcov))
+    A, mean, dev, alpha = popt[0], popt[1], popt[2], popt[3]
     x = np.linspace(min(w_list), max(w_list), 1000)
-    fit = ss.lognorm.pdf(x, *par)*len(w_list)*(bins[1]-bins[0])
-    ax[1].plot(x, fit)
-    print(*par)
+    fit = skew_gauss(x, A, mean, dev, alpha)
+    ax[1].plot(x, fit, c='red')
     
     ax[1].annotate(f"N entries: {len(w_list)}\n"\
-                   +"Fit type: lognorm\n"\
-                   +"Mean: {:.2f}\n".format(par[2])\
-                   +"Dev: {:.2f}".format(par[0]),
+                   +"Fit type: skew gauss"\
+                   +"\nMean: ({:.1e}".format(popt[1])+r'$\pm$'+'{:.1e})'.format(pdev[1])\
+                   +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
                    **annotation_kwargs)
     
 #################################################################################################
@@ -402,4 +409,32 @@ def func(x, ampl, a, b):
     """
     
     return ampl/2*(1+sp.erf((x-a)/(b*np.sqrt(2))))
-        
+
+#################################################################################################
+
+def skew_gauss(x, A, mean, dev, alpha,):
+    """Skew, not-normalized and shifted gaussian distribution.
+
+    References:
+    - https://www.wolframalpha.com/input?i=skew+gaussian+distribution
+    - https://stackoverflow.com/questions/15400850/scipy-optimize-curve-fit-unable-to-fit-shifted-skewed-gaussian-curve
+    - https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewnorm.html
+
+    """
+    
+    import math
+    import scipy.special as sp
+    
+    pdf = (1/(dev*np.sqrt(2*np.pi)))*np.exp(-pow((x-mean),2)/(2*pow(dev,2)))
+    cdf = sp.erfc((-alpha*(x-mean))/(dev*np.sqrt(2)))
+    return A*pdf*cdf
+
+#################################################################################################
+
+def gauss(x, A, mean, dev):
+    """Not-normalized, shifted gaussian distribution."""
+    
+    import math
+    
+    pdf = (1/(dev*np.sqrt(2*math.pi)))*np.exp(-(x-mean)**2/(2*dev**2))
+    return A*pdf

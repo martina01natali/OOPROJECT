@@ -1,12 +1,12 @@
 ###############################################################################
-#                    TEST code for iv_sipm_class_DEF.py                       #
+#                      TEST code for iv_sipm_class_DEF.py                     #
 ###############################################################################
 
 from iv_sipm_class_DEF import *
 
 # %matplotlib
 
-BASEPATH = "../Data/"
+BASEPATH = "..\\Data\\"
 
 myfiles = {'LN2':   {'FWD': [], 'REV': []},
            'RoomT': {'FWD': [], 'REV': []} }
@@ -43,6 +43,7 @@ for root, dirs, files in os.walk(BASEPATH):
     if fnmatch.fnmatch(root, "*RoomT"):
         myfiles['RoomT'] = {D: [os.path.join(root, file) for file in files if file.find(D) > -1] for D in DIRECTIONS }
         myfiles['RoomT']['REV'].sort()
+
         
 ###############################################################################
 

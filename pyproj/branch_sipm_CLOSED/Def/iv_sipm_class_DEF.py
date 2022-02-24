@@ -96,8 +96,9 @@ class iv():
             self.ivf = pd.concat([self.ivf, tempdf], ignore_index=True)
         
         for datafile in reversed(datafiles['REV']):
-            answ = input(f"You are working on the REV file {datafile}. Do you want to proceed? (y/n) (n will make you choose another file)")
+            answ = input(f"You are working on the REV file {datafile}. Do you want to proceed? (y/n) (n will make you choose the next file. To go back you have to interrupt the run.)")
             if answ=='y':
+                self.datafiles['REV'] = [datafile]
                 tempdf = read_df_iv(datafile)
                 self.ivr = pd.concat([self.ivr, tempdf], ignore_index=True)
                 break
@@ -203,14 +204,12 @@ class iv():
                 self.norm_dIdV_fit.V.min(),
                 0,
                 -np.inf,
-                0,
             ],
             [ # list of maximum values for all parameters
                 self.norm_dIdV_fit.norm_dIdV.max(),
                 self.norm_dIdV_fit.V.max(),
                 self.norm_dIdV_fit.V.max()-self.norm_dIdV_fit.V.min(),
                 np.inf,
-                self.norm_dIdV_fit.V.max(),
             ]
         ]
 
@@ -226,9 +225,9 @@ class iv():
                                maxfev=1000,
                               )
 
-        A, mean, dev, alpha, c = popt[0], popt[1], popt[2], popt[3], popt[4]
+        A, mean, dev, alpha = popt[0], popt[1], popt[2], popt[3]
 
-        self.norm_dIdV_fit['gauss'] = skew_gauss(self.fitr.V, A, mean, dev, alpha, c)
+        self.norm_dIdV_fit['gauss'] = skew_gauss(self.fitr.V, A, mean, dev, alpha)
 
         self.Vbd = [mean, dev]
 
@@ -263,7 +262,8 @@ class iv():
         ax[0].set_ylabel("Current (A)")
         ax[0].set_xlabel("Voltage (V)")
         ax[0].grid(True)
-        ax[0].set_title(f"FWD @{self.temperature}")
+        source = self.datafiles['FWD'][0].split("\\")[-1]
+        ax[0].set_title(f'FWD @{self.temperature} from {source}')
 
     #--------------------------------
 
@@ -279,7 +279,8 @@ class iv():
         ax[1].set_xlim(self.params['xlim'])
         ax[1].set_ylim(self.params['ylim'])
         ax[1].grid(True)
-        ax[1].set_title(f"REV @{self.temperature}")
+        source = self.datafiles['REV'][0].split("\\")[-1]
+        ax[1].set_title(f'REV @{self.temperature} from {source}')
 
         ax_twin = ax[1].twinx()
         ax_twin.tick_params(axis='y', colors='darkgreen')
@@ -354,8 +355,7 @@ def derivative(X, Y):
 
 # -----------------------------------------
 
-
-def skew_gauss(x, A, mean, dev, alpha, c):
+def skew_gauss(x, A, mean, dev, alpha):
     """Skew, not-normalized and shifted gaussian distribution.
 
     References:
@@ -364,8 +364,10 @@ def skew_gauss(x, A, mean, dev, alpha, c):
     - https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skewnorm.html
 
     """
-
-    pdf = (1/(dev*np.sqrt(2*math.pi)))*np.exp(-(x-mean)**2/(2*dev**2))
-    cdf = sp.erf((-alpha*((x-mean)/dev))/(np.sqrt(2)))
-    # not-normalization is obtained by *A
-    return A*pdf*cdf+c # not normalized, skewed, shifted gaussian
+    
+    import math
+    import scipy.special as sp
+    
+    pdf = (1/(dev*np.sqrt(2*np.pi)))*np.exp(-pow((x-mean),2)/(2*pow(dev,2)))
+    cdf = sp.erfc((-alpha*(x-mean))/(dev*np.sqrt(2)))
+    return A*pdf*cdf
