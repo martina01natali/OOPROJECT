@@ -1,76 +1,36 @@
-# Things to do and not to get lost around codes
+# README - pyproj
 
-## Goals
+This is the main README file.
+Keep updated with your main progress, issues, big fixes.
+"--" this tells you that a fix is rated low priority
 
-- [x] produce claro_files.txt with paths to good files (process_claro_loop)
-- [x] produce bad_files.txt with paths to bad files
-- [ ] understand what data you need for fitting and make a list of them --> look at plot_fit_claro-py in materiale_tom
-- [ ] produce plot of a single file
-    - [x] make sure ticks of y axes are manually aligned
-    - [x] make sure it can work an all files
-    - [ ] bring metadata from fileinfos dict down to plotting: how? you tell me: by search?
-    - [ ] add annotations
-    - [ ] add fit parameters+errors
-    - [ ] use metadata to write correct title for plot
-    - [ ] font of ticks is all wrong
-- [ ] implement object-orientation (make classes and functions)
-    - [x] make the plot a function
-    - [x] produce plots with automatic loop, and choose different plots with different methods defined in a single class
-    - [x] define what function you want in your class
-    - [ ] build the class with functions to read and plot files
- 
-- [x] merge process_claro_loop and claro_fit_single
+------------------------------------------------------------------------------------------------
 
-## Related projects/goals
-- [ ] build matplotlib or plotting guide (e.g. as a notebook or md file)
-- [x] implement git version control and transport your project on main GIT repo
+## branch_dcr status
+Created Def folder with file .py of functions and TEST notebook.
+Everything works fine.
 
-####################################################################
-## Object-orientation
+### Fixes/updates
+- [ ] add annotation with dcr value in 2D plot
+- [ ] create code block in TEST notebbok to plot an arbitrary waveform of given index
+- [ ] make a class!
+    - [ ] STUDY WHAT A CLASS IS AND MAKE NOTES/GUIDE/EXCERCISE
 
-Follow strategy: 1 function = 1 action
+------------------------------------------------------------------------------------------------
 
-### Structure
+## branch_claro status
+Created Def folder with file .py of functions and TEST notebook.
+Everything works fine.
 
-```python
-def find_paths(TDIR, DIRPATH, FILEPATH)
-"""
-MAY BE DIVIDED IN 2 FUNCTIONS:
-        get_claro_paths to print only bad and good files
-        get_claro_data to get paths and data to be passed inside plot
-    HAVE TO CHECK IF DATA EXTRACTION WITH PANDAS IS FASTER THAN STRING-SEARCH
-        --> NEED CLOCK
-        ------all done------------
-"""
+### Fixes/updates
+- [ ] --discriminate betwwen non monotona/troppi dati files
+- [ ] --be able to plot an arbitrary number of plots in a single page in a single pdf file
+- [ ] make a class!
 
-def read_data(path)
-"""
-NAME IS IN CONFLICT WITH claro_read
-    What it does: reads all data of files in path
-    What it returns: x, y, and GUESSES = [AMPLITUDE, TRANSITION, AMPLITUDE/2]
-"""        
+------------------------------------------------------------------------------------------------
 
-def fit_erf(x, y, META, npoints=1000):
-"""
-what it does: fits the data with an erf function and plots it
-            IT DOES 2 THINGS, NO GOOD, NEED TO BE DIVIDED
-    NEW THINGS TO DO:
-        - return xfit, yfit, and list of parameters with st.dev., not correlation matrix, to be used in annotation in plot
-"""
-
-def plot_fit(x, y, xfit, yfit, metafit,
-             show_scatter=True, show_fit=True, show_transition=True,
-             save=False,
-             **kwargs):
-"""
-    what it does: takes the output of fit_erf (xfit, yfit) and the errors and prints the plot of the best-fit curve upon the data; automatically detects transition point and has option to print it highlighted
-"""
-
-#--------------------------------------------------------------------#
-# New functions to construct
-
-def errorplot_fit(...):
-"""
-what it does: prints the minimal, maximal and best fit curves, the first two can be get from +- std.dev.
-"""    
-```
+## branch_sipm status
+- [x] finish review of class
+- [x] define upgrades to make
+...
+FINISHED
