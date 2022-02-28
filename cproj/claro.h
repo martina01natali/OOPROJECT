@@ -1,33 +1,31 @@
 #ifndef CLARO_H
 #define CLARO_H
 
-class DataStruct
-{
-private:
-    std::vector<float>  meta, x, y, y1;
-public:
-    DataStruct() = default;
-};
+struct DataStruct { std::vector<float>  meta, x, y, y1; };
 
 class Claro
 {
 private:
     std::string FILEPATH {};
     std::vector<std::string> lines {};
-    DataStruct data {};
-
-// Private member functions
+    std::vector<float>  meta, x, y, y1;
+    // void setup() {}
 
 public:
 // Constructors
     Claro() = default;
-    Claro(std::string filepath) : FILEPATH{filepath} { this->readFile(); } // constructor from filepath only, must be updated with methods to get other parameters
+    Claro(std::string filepath) : FILEPATH{filepath}
+    {
+        this->readFile();
+        this->xyData();
+    }
 
 // Setters and getters
-    void setFilePath(std::string filepath) { FILEPATH = filepath; }
-    const std::string& getFilePath() { return FILEPATH; } // getters should always return a const ref to the actual private member, to avoid any operation to change it
     // void reset() {}
+    void setFilePath(std::string filepath) { FILEPATH = filepath; }
+    const std::string& getFilePath() { return FILEPATH; }
 
+// Other methods
     void readFile();
     DataStruct xyData();
     std::vector<std::string> ssplit(std::string const& s, std::string const& del);
@@ -85,21 +83,23 @@ DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
             // if tokens belong to first two lines, put in vector of metadata
             // else put in x, y1, y2 vectors depending on column they belong to
             if (i<2)
-                this->data.meta.push_back(datum);
+                // this->data.meta.push_back(datum);
+                this->meta.push_back(datum);
             else
             {
                 if (j==0)       // column 0
-                    this->data.x.push_back(datum);
+                    this->x.push_back(datum);
                 else if (j==1)  // column 1
-                    this->data.y.push_back(datum);
+                    this->y.push_back(datum);
                 else if (j==2)  // column 2
-                    this->data.y1.push_back(datum);
+                    this->y1.push_back(datum);
             }
             j++;
         }
         i++;
     }
-    return this->data;
+    DataStruct copy {this->meta, this->x, this->y, this->y1};
+    return copy;
 }
 //----------------------------------------------------------------------------//
 std::vector<std::string> Claro::ssplit(std::string const& s, std::string const& del)
@@ -125,6 +125,6 @@ std::vector<std::string> Claro::ssplit(std::string const& s, std::string const& 
 
     return tokens;
 }
-
 //----------------------------------------------------------------------------//
+
 #endif
