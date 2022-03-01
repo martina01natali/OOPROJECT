@@ -7,7 +7,6 @@
 #include <vector>
 #include <stdio.h>
 #include "Claro.h"
-#include "support_func.h"
 
 using namespace std;
 
@@ -24,29 +23,21 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     // Reading file and preparing std::vector of lines of file
     Claro targetfile {FILEPATH};
     DataStruct data = targetfile.xyData();
-    auto meanx = mean(data.x);
-    auto varx = var(data.x);
-    auto covarxy = covar(data.x,data.y);
-    auto a {aCoeff(data.x,data.y)};
-    auto b {bCoeff(data.x,data.y)};
-    auto rquadro {rsq(data.x,data.y)};
-    auto sigma {sigmasq(data.x,data.y)};
+
+    float meanx = mean(data.x);
+    float varx = var(data.x);
+    float covarxy = covar(data.x,data.y);
+    float a {aCoeff(data.x,data.y)};
+    float b {bCoeff(data.x,data.y)};
+    float rquadro {rsq(data.x,data.y)};
+    float sigma {sigmasq(data.x,data.y)};
 
     std::cout << a << std::endl;
     std::cout << b << std::endl;
     std::cout << sigma << std::endl;
     std::cout << rquadro << std::endl;
     std::cout << covarxy << std::endl;
-    /*
-    float mean(x,y)
-    float se(x,y)
-    float var(x,y)
-    float covar(x,y)
-    float aCoeff(x,y)
-    float bCoeff(x,y)
-    float r2(x,y)
-    float sigma2(x,y)
-    */
+
     /* checkpoint since I cannot use a debugger eheheheheh
     for (auto datum : targetfile.x)
     {

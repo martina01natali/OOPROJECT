@@ -7,20 +7,8 @@
 #include <vector>
 #include <stdio.h>
 #include <cmath>
-#include "Claro.h"
 
 using namespace std;
-
-/*
-float mean(x,y)
-float se(x,y)
-float var(x,y)
-float covar(x,y)
-float aCoeff(x,y)
-float bCoeff(x,y)
-float rsq(x,y)
-float sigmasq(x,y)
-*/
 
 //----------------------------------------------------------------------------//
 float mean(const std::vector<float>& x)
