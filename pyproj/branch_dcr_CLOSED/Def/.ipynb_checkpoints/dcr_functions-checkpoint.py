@@ -191,40 +191,43 @@ def analysis(wf_table, meta, timestamp_table, custom_n_events=1000, time_adjust=
             N_bad_wf += 1
             code = 'bad'
         
-        # Plotting control (for single_wf)  
-        fig, ax = plt.subplots()
-        single_wf.loc[:,'min'] = single_wf.iloc[minimum_list]['CH1']
-        single_wf.loc[:,'clean_min'] = single_wf.iloc[clean_minimum_list]['CH1']
-        ax.plot(single_wf["TIME"], single_wf['CH1'], linestyle="-", linewidth=1)
-        ax.scatter(single_wf["TIME"], single_wf['min'], color="darkred")
-        ax.scatter(single_wf["TIME"], single_wf['clean_min'], color="green")
-        ax.axhline(baseline, c='b')
-        ax.set_title(f'Waveform analysis: event n_{n}')
-        ax.set_xlabel('Relative time (s)')
-        ax.set_ylabel('Amplitude (V)')
-        ax.text(0.8,0.8,
-                code,
-                transform=ax.transAxes,
-                fontsize=12,
-                color='black',
-                bbox=dict(boxstyle="round",
-                          edgecolor="black",
-                          facecolor="palegreen" if code=='good' else "lightsalmon",
-                          alpha=.8),
-               )
-        
-        if save_plot==True:
-            data_origin = meta['path'].split('\\')[-1].split('_')[-2]
-            try:
-                figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
-                plt.savefig(figure_path)
-            except FileNotFoundError:
-                print(f'Creating "Plots_{data_origin}" subfolder in your current working directory...\n')
-                os.mkdir(f'Plots_{data_origin}')
-                figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
-                plt.savefig(figure_path)
-            finally:
-                if plot==False: plt.close()
+        # Plotting control (for single_wf)
+        if plot==True or save_plot==True:
+            fig, ax = plt.subplots()
+            single_wf.loc[:,'min'] = single_wf.iloc[minimum_list]['CH1']
+            single_wf.loc[:,'clean_min'] = single_wf.iloc[clean_minimum_list]['CH1']
+            ax.plot(single_wf["TIME"], single_wf['CH1'], linestyle="-", linewidth=1)
+            ax.scatter(single_wf["TIME"], single_wf['min'], color="darkred")
+            ax.scatter(single_wf["TIME"], single_wf['clean_min'], color="green")
+            ax.axhline(baseline, c='b')
+            ax.set_title(f'Waveform analysis: event n_{n}')
+            ax.set_xlabel('Relative time (s)')
+            ax.set_ylabel('Amplitude (V)')
+            ax.text(0.8,0.8,
+                    code,
+                    transform=ax.transAxes,
+                    fontsize=12,
+                    color='black',
+                    bbox=dict(boxstyle="round",
+                              edgecolor="black",
+                              facecolor="palegreen" if code=='good' else "lightsalmon",
+                              alpha=.8),
+                   )
+            
+            if save_plot==True:
+                data_origin = meta['path'].split('\\')[-1].split('_')[-2]
+                try:
+                    figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
+                    plt.savefig(figure_path)
+                    if plot==False: plt.close()
+                except FileNotFoundError:
+                    print(f'Creating "Plots_{data_origin}" subfolder in your current working directory...\n')
+                    os.mkdir(f'Plots_{data_origin}')
+                    figure_path = os.path.join(os.path.join(os.getcwd(),f'Plots_{data_origin}'), event_name)
+                    plt.savefig(figure_path)
+                    if plot==False: plt.close()
+                finally:
+                    if plot==False: plt.close()
     
     # Metadata update
     total_time = sum(time_list)
@@ -321,13 +324,14 @@ def plot_2d(data, meta, sns_palette='deep', title='2D plot',
     
     # Plotting
     f, axs = plt.subplots(2, 1, figsize=(10, 8), sharex=True, sharey=False)
+    plt.subplots_adjust(hspace=0)
     ax1 = axs[0]
     ax2 = axs[1]
     
     sns.scatterplot(data=mins, x="Delta T (s)", y="Amplitude (V)", hue="Noise", ax=ax1,
                     hue_order=[key for key in noise_list_red],
                     alpha=0.7, legend=False, palette=sns_palette)
-    sns.kdeplot(data=mins, x="Delta T (s)", hue="Noise", ax=ax2,
+    sns.histplot(data=mins, x="Delta T (s)", hue="Noise", ax=ax2, bins=30,
                 hue_order=[key for key in noise_list_red],
                 multiple="stack", fill=True, log_scale=True, common_norm=True,
                 edgecolor='white', alpha=0.7, palette=sns_palette,
