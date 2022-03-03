@@ -5,12 +5,14 @@ import warnings
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 from matplotlib import pyplot as plt
 from scipy.signal import argrelextrema
 
 
 class DarkCounts():
-    """This is the docstring of class DarkCounts"""
+    """Class DarkCounts is used to analyze waveforms and estimate the DCR of a SiPM."""
     
     PARAMS = {'custom_n_events' : 1000,
               'thr' : 0.006,
@@ -22,7 +24,7 @@ class DarkCounts():
     #-------------------------------------------------------------------------#
     
     def __init__(self, datafiles:dict=DATAFILES, params:dict=PARAMS):
-        """Initializer. Requires dict with relative paths of files to process."""
+        """Initializer that takes dict with relative paths of files to process and reads them, creating dataframes associated."""
         
         self.datafiles = datafiles
         self.meta = {'path_wf' : datafiles['wf'], 'path_time' : datafiles['time'],}
@@ -32,11 +34,35 @@ class DarkCounts():
         self.time = pd.DataFrame()
         self.wf_processed = pd.DataFrame()
         self.read_datafiles()
+        
+    #-------------------------------------------------------------------------#
     
+    def __repr__(self):
+        print("{:<25}\n".format("Metadata:"))
+        for key, value in self.meta.items():
+            print("{:<25} {:<25}".format(key,value))        
+        print("{:<25}\n".format("Parameters:"))
+        for key, value in self.params.items():
+            print("{:<25} {:<25}".format(key,value))  
+        return ""
+    
+    #-------------------------------------------------------------------------#
+    
+    # print(u"\u00B1")
+    def print_dcr(self):
+        print('Estimated DCR: ({:.2e} '.format(self.meta['DCR (Hz)'])\
+              +u"\u00B1"\
+              +' {:.0e}) Hz'.format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
+        print("\nThe relative error associated to the DCR is equal to the percentage of \'bad\' waveforms detected in the provided dataset ({:.2f}%). This is an arbitrary choice due to lack of multiple measurements on the same instrument.".format(self.meta['% bad wf']))
+        
     ###########################################################################
     
     def read_datafiles(self):
-        """Basic read function with automatic timestamp or wf file type detection."""
+        """Basic read function with automatic timestamp or wf file type detection.
+        
+        Produces attributes self.wf and self.time that are dataframes of data associated to 
+        
+        """
         
         timestamp_file_name = self.datafiles['time']
         timestamp_path = os.path.join(os.getcwd(),timestamp_file_name)
@@ -201,7 +227,8 @@ class DarkCounts():
         print('Number of clean minima found: %d' % len(general_clean_min))
         print('Fraction of waveforms with too many minima or -inf data ("bad_wf") on total: {:.1%}'.format(N_bad_wf/custom_n_events))
         print('Total acquisition time: {0:0.3e} s'.format(total_time))
-        print('Estimated DCR: {0:0.3e} Hz'.format(self.meta["n clean minima"]/total_time))
+        print('Estimated DCR: {:.2e} Hz'.format(self.meta['DCR (Hz)'])\
+              +u"\u00B1"+" {:.0e}) Hz".format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
             
         # Return control
         clean_ampl = pd.DataFrame(
@@ -266,9 +293,6 @@ class DarkCounts():
             show=True, save=False, save_path='Amplitude_vs_dt', save_extension='pdf',
             **kwargs,):
         """2D plot of DCR with amplitude (V) vs time delta (s) scatterplot and histogram."""
-    
-        from matplotlib.patches import Patch
-        from matplotlib.lines import Line2D
         
         # Preprocessing
         dcr = self.meta['DCR (Hz)']
@@ -283,16 +307,7 @@ class DarkCounts():
         mean_dict = {key : mins.groupby('Noise').mean().loc[key]['Delta T (s)'] for key in noise_list_red}
         percent_dict = {key : mins.groupby('Noise').count().loc[key].values[0]/n_mins*100 for key in noise_list_red}
         
-        # Plotting
-        # gs = gridspec.GridSpec(11, 4, hspace=0.0)
-        # ax1 = plt.subplot(gs[:4, :2])
-        # ax2 = plt.subplot(gs[:4, 2:4])
-        
-        # f, axs = plt.subplots(2, 1, figsize=(10, 8), sharex=True, sharey=False)
-        # plt.subplots_adjust(hspace=0)
-        # ax1 = axs[0]
-        # ax2 = axs[1]
-        
+        # Plotting        
         f = plt.figure(figsize=(10,8))
         gs = f.add_gridspec(2, 1, height_ratios=(5, 3),
                               left=0.1, right=0.9, bottom=0.1, top=0.9,
@@ -324,16 +339,18 @@ class DarkCounts():
         ax1.legend(handles=legend_scatter, loc='upper left')
         ax2.legend(handles=legend_hist, loc='upper left')
         
-        ax1.text(.65, .8,
+        ax1.text(.65, .85,
                  'N good events: %d\n' % self.meta['n clean minima']\
                  +'Acquisition time: {:.2e} s\n'.format(self.meta['total acquis time (s)'])\
-                 +'DCR = '+'{:.2e} Hz'.format(dcr),
-                 ha='left', va='center',             
+                 +'DCR = '+'({:.2e} '.format(dcr)\
+                 +r'$\pm$'\
+                 +" {:.0e}) Hz".format(self.meta['% bad wf']/100*dcr),
+                 ha='left', va='center',
                  transform=ax1.transAxes,
                  fontsize=12,
                  color='black',
-                 bbox=dict(boxstyle="round",
-                           edgecolor="black",
+                 bbox=dict(boxstyle="square",
+                           edgecolor="gray",
                            facecolor="white",
                            alpha=.8,
                           )
@@ -347,20 +364,6 @@ class DarkCounts():
         
         if save==True:
             f.savefig(f'{data_origin}_'+save_path+'.'+save_extension)
-
-    
-    
-######################################## HEADER #################################################
-# def read_wf(fname)
-#     
-# def analysis(wf_table, meta, timestamp_table custom_n_events=1000, time_adjust=True,
-#              threshold=0.006, distance=50, many_minima=6250,
-#              plot=False, save_plot=False)
-#     
-# def analysis_delta_t(analyzed_wf, meta, crosstalk_thr=10e-3, delayed_cross_thr=6e-6)
-# 
-# def plot_2d(data, sns_palette='deep', title='2D plot',
-#             show=True, save=False, save_path='./Amplitude_vs_dt.', save_extension='pdf',
-#             **kwargs,)
-# 
-###############################################################################
+            
+    ###########################################################################
+        
