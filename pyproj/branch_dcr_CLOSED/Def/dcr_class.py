@@ -28,7 +28,7 @@ class DarkCounts():
         
         self.datafiles = datafiles
         self.meta = {'path_wf' : datafiles['wf'], 'path_time' : datafiles['time'],}
-        self.params = params
+        self._params = params
         
         self.wf = pd.DataFrame()
         self.time = pd.DataFrame()
@@ -38,22 +38,43 @@ class DarkCounts():
     #-------------------------------------------------------------------------#
     
     def __repr__(self):
-        print("{:<25}\n".format("Metadata:"))
+        print("{:<25}".format("meta:"))
         for key, value in self.meta.items():
             print("{:<25} {:<25}".format(key,value))        
-        print("{:<25}\n".format("Parameters:"))
-        for key, value in self.params.items():
+        print("\n{:<25}".format("params:"))
+        for key, value in self._params.items():
             print("{:<25} {:<25}".format(key,value))  
         return ""
     
     #-------------------------------------------------------------------------#
     
     # print(u"\u00B1")
-    def print_dcr(self):
-        print('Estimated DCR: ({:.2e} '.format(self.meta['DCR (Hz)'])\
-              +u"\u00B1"\
-              +' {:.0e}) Hz'.format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
-        print("\nThe relative error associated to the DCR is equal to the percentage of \'bad\' waveforms detected in the provided dataset ({:.2f}%). This is an arbitrary choice due to lack of multiple measurements on the same instrument.".format(self.meta['% bad wf']))
+    @property
+    def dcr(self):
+        try:
+            print('Estimated DCR: ({:.2e} '.format(self.meta['DCR (Hz)'])\
+                  +u"\u00B1"\
+                  +' {:.0e}) Hz'.format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
+            print("\nThe relative error associated to the DCR is equal to the percentage of \'bad\' waveforms detected in the provided dataset ({:.2f}%). This is an arbitrary choice due to lack of multiple measurements on the same instrument.".format(self.meta['% bad wf']))
+        except AttributeError as err:
+            print("DCR not estimated yet. Call .analysis() first.")
+        
+    @property
+    def custom_n_events(self):
+        return "%d" % self._params['custom_n_events']
+    
+    @custom_n_events.setter
+    def custom_n_events(self, value):
+        self._params['custom_n_events'] = value
+    
+    @property
+    def params(self):
+        return self._params
+    
+    @params.setter
+    def params(self, value:dict):
+        self._params = value
+        
         
     ###########################################################################
     
@@ -93,7 +114,7 @@ class DarkCounts():
     ###########################################################################
     
     def analysis(self, distance=50, many_minima=6250,
-                 plot=False, save_plot=False, save_format='png', *params):
+                 plot=False, save_plot=False, save_format='png'):
         """Function to analyze waveform data and locate clean signal peaks.
         
         This function finds all the minima in each waveform (wf) and selects the "good ones"
@@ -130,9 +151,9 @@ class DarkCounts():
         
         start_time = time.time()
         
-        custom_n_events = self.params['custom_n_events']
+        custom_n_events = self._params['custom_n_events']
         wf_datapoints = self.meta['wf_datapoints']
-        threshold = self.params['thr']
+        threshold = self._params['thr']
         
         copy = self.wf.copy()
         general_clean_ampl = []
@@ -255,8 +276,8 @@ class DarkCounts():
         - dataframe with columns "Delta T (s)" and "Amplitude (V)" that can be used for 2D plotting
         """
             
-        crosstalk_thr = self.params['cross_thr']
-        delayed_cross_thr = self.params['delay_thr']
+        crosstalk_thr = self._params['cross_thr']
+        delayed_cross_thr = self._params['delay_thr']
         
         def noise_discrimination(df, crosstalk_thr, delayed_cross_thr, inplace=True):
             

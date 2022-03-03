@@ -16,30 +16,24 @@ from scipy import special as sp
 from scipy.optimize import curve_fit
 
 ######################################## HEADER #################################################
-# def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_*\S_curve",
-#                FILEPATH="Ch_*_offset_*_Chip_*.txt")
-# 
-# def read_data(path)
-#
-# def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',)
-# 
-# def fit_erf(x, y, META, npoints=1000)
-# 
-#     
-# def fit_erf(x, y, META, npoints=1000)
-#     
+# def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve",
+#              FILEPATH="Ch_*_offset_*_Chip_*.txt",
+#              custom_n_files='all',
+#              log=True)
+# def fileinfo_find(fileinfo, chip, ch, station='1', sub='11',) -> dict():
+# def read_data(path):
+# def fit_erf(x, y, meta, guesses='default',
+#             interactive=True, log=True, warnings_ignore=True, 
+#             npoints=1000):
 # def plot_fit(x, y, metafit, fileinfo, npoints=1000,
+#              interactive=False, log=True,
 #              show_scatter=True, show_fit=True, show_transition=True,
 #              save=False, save_path='.\plot', save_format='pdf', show=True,
-#              **kwargs)
-#
-# def func(x, ampl, a, b)
-#     """
-#     Modified erf function with amplitude ampl and shift on the vertical axis ampl/2,
-#     inflection point at a, normalization proportional to b.
-#     Guesses may be provide as a list e.g. [AMPLITUDE, TRANSITION, AMPLITUDE/2].
-#     """
-# 
+#              **kwargs):
+# def hist_tw(t_list, w_list, ax):
+# def func(x, ampl, a, b):
+# def skew_gauss(x, A, mean, dev, alpha,):
+# def gauss(x, A, mean, dev):
 #################################################################################################
 
 def fileinfo(TDIR, DIRPATH="*Station_1__*\Station_1__??_Summary\Chip_???\S_curve",
