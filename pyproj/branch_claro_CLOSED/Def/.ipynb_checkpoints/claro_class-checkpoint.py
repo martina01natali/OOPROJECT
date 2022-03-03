@@ -20,8 +20,8 @@ from matplotlib.ticker import MaxNLocator
 
 class Single():
     
-    def __init__(self, path, fileinfo:dict):
-        self.path = path
+    def __init__(self, fileinfo:dict):
+        self.path = fileinfo['path']
         self.read_data()
         self._meta = {
             'path' : self.path,
@@ -29,9 +29,11 @@ class Single():
             'transition' : self.transition,
             'width' : self.width
         }
-        self.fit_guess = [self.amplitude,
-                          self.transition,
-                          self.amplitude/2]
+        self.fit_guess = [
+            self.amplitude,
+            self.transition,
+            self.amplitude/2
+        ]
         self.fileinfo = fileinfo
     
     def __repr__(self):
@@ -120,6 +122,12 @@ class Single():
                 'errors' : [fit_dev[i] for i in range(len(fit_dev))],
                 'code' : 'good'
             }
+            # self.fit_params = {
+            #     'amplitude' : [fit_params[0], fit_dev[0]],
+            #     'transition_x' : [fit_params[1], fit_dev[1]],
+            #     'transition_y' : [fit_params[2], fit_dev[2]],
+            #     'code' : 'good'
+            # }
         
         finally:
             if log==True:
@@ -128,11 +136,11 @@ class Single():
             
     #-------------------------------------------------------------------------#
             
-    def plot_fit(self, npoints=1000,
-                 interactive=False, log=True,
-                 show_scatter=True, show_fit=True, show_transition=True,
-                 save=False, save_path='.\plot', save_format='pdf', show=True,
-                 **kwargs):
+    def plot(self, npoints=1000,
+             interactive=False, log=True,
+             show_scatter=True, show_fit=True, show_transition=True,
+             save=False, save_path='.\plot', save_format='pdf', show=True,
+             **kwargs):
         """Scatterplot of data, with options to plot both the erf fit and transition point."""
         
         x = self.x
@@ -220,6 +228,7 @@ class Single():
 ###############################################################################
 #                                Claro class                                  #
 ###############################################################################
+
 class Claro():
     
     # def __init__():
@@ -259,6 +268,11 @@ class Claro():
         self.bad_files = []
         self.meta = dict()
         
+        self.tlist = []
+        self.wlist = []
+        self.fit_tlist = []
+        self.fit_wlist = []
+        
     def __repr__(self):
         return  f"top dir:   {self._tdir}\n" \
                 f"params:    {self._params}\n" \
@@ -274,22 +288,8 @@ class Claro():
     
     def get_fileinfos(self):
         """Function that walks on all subdirectories of TDIR that match DIRPATH and FILEPATH.
-        
-        Inputs
-        ------
-        TDIR: absolute path
-            Path to the top directory.
-        DIRPATH: relative path, wildcards admitted
-            Regular expression with relative path to the folders and subfolders
-            where the walk will take place.
-        FILEPATH: relative path, wildcard admitted
-            Regular expression with relative path to the files to walk on.
-        custom_n_files: int or str, default='all'
-            Arbitrary number of files to process, used for testing purposes.
             
-        Returns
-        -------
-        - dict containing the following keys: path, station, sub, chip, ch, offset, amplitude, transition, width.        
+        Has an interactive interface for the user and returns a dict containing the following keys: path, station, sub, chip, ch, offset, amplitude, transition, width.
         """
         
         # Returns processing time as well.
@@ -349,6 +349,8 @@ class Claro():
                                             }
                                     good_counts += 1
                                     self.good_files.append(thisfile)
+                                    self.tlist.append(self.fileinfos[thisfile]['transition'])
+                                    self.wlist.append(self.fileinfos[thisfile]['width'])
                                 if log==True:
                                     with open(OUTFILE, "a") as output:
                                         output.write(thisfile+"\n")
@@ -388,6 +390,137 @@ class Claro():
                     return i
                     break
         raise NameError('No matching file found in provided dict.')
+        
+    ###########################################################################
+    
+    # def make_child --> implement inheritance
+    # def plot_single():
+    # """Plot all the files you've walked through, making them Single objects, in a loop"""
+    # --> produce fit_tlist and fit_wlist and logs unfitted and unplotted
+    # --> build histograms of differences between file and plot
+    
+    def plot_loop(self, plot=True, **kwargs):
+        """Analyze and plot the whole dataset exloiting Single objects.
+        1. loop over all files stored in self.fileinfos
+        2. produce a Single object for each
+        3. fit and plot the Single object
+        Accepts **kwargs as dict with parameters passed to Single.plot().
+        """
+        for fileinfo in self.fileinfos.values():
+            single = Single(fileinfo)
+            single.fit_erf()
+            ################### TO UPDATE/FINISH #########################
+            # if plot==True: single.plot(**kwargs)
+            # self.fit_tlist.append(single.fit_params['params'][1]) # amplitude, transx, width
+            # self.fit_wlist.append(single.fit_params['params'][2])
+            ############ what about the errors on trans and width? an error barplot? #############        
+    
+    ###########################################################################
+    
+    def plot_MultiPage(self, log=False, save=False, save_path = 'aHundredPlots.pdf'):
+    # Loop on the files and print plots on multi-page pdf
+
+    # custom_n_files = 100     # This is used to break the printing of plots: comment the line
+                            # or assign to 'all' to plot all the files
+
+    # Histograms of transition points and widths
+    tw_hist = True # Choose True or False for plotting, showing and saving
+    t_list = []
+    w_list = []
+    
+    with PdfPages(save_path) as pdf:
+        per_page = 0
+        while not per_page:
+            per_page = int(input("How many plots do you want per page? Allowed values are 1,2,3,4,6. "))
+            if per_page==1: nrows, ncols = 1, 1
+            elif per_page==2: nrows, ncols = 2, 1
+            elif per_page==3: nrows, ncols = 3, 1
+            elif per_page==4: nrows, ncols = 2, 2
+            elif per_page==6: nrows, ncols = 3, 2
+            # else: raise NameError("Please run again and choose one of the allowed number of subplots.")
+        
+        for n, file in enumerate(a.values()): # file is the sub-dict, access keys via file['key']
+    
+            # Preprocessing
+            print(f"Reading file n. {n}...", end='\r')
+            x,y,meta = read_data(file['path'])
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                metafit = fit_erf(x,y,meta, interactive=False, log=log_choice)
+    
+            meta['fit_dict'] = metafit
+            
+            # Building lists of transition points and widths
+            t_list.append(meta['transition'])
+            w_list.append(meta['width'])
+            
+            # Plotting and saving on multipage pdf
+            if isinstance(custom_n_files,int):
+                if n>=custom_n_files: continue
+            index = n%per_page+1
+            if index==1:
+                fig=plt.figure(figsize=(10,15)) 
+            fig.add_subplot(nrows,ncols,index)
+            plot_fit(x, y, metafit, fileinfo=file, show=True, save=False, log=log_choice)
+            if index==per_page or n==len(a.values())-1:
+                if save_choice: pdf.savefig(fig)
+                plt.close(fig)
+        plt.close()
+    
+    ###########################################################################
+    
+    def hist_tw(t_list, w_list, ax):
+        
+        annotation_kwargs = {'xy':(.1,.7), 'xycoords':'axes fraction',
+                             'bbox':dict(boxstyle="round",edgecolor="black",facecolor="white",alpha=.8)}
+        
+        #-----------------------------------------   
+        
+        # Transition histogram
+        ax[0].set_title("Transition points' histogram", fontsize=12)
+        ax[0].tick_params(axis='y', which='minor', width=0)
+        ax[0].yaxis.set_major_locator(MaxNLocator(integer=True))
+        counts, bins, pads = ax[0].hist(t_list, bins=int(np.sqrt(len(t_list))/4), density=False,
+                                    label='Transition points (x)', alpha=.5,
+                                    log=False, rwidth=1)
+        
+        fit_bounds = [ [0,0,0], [sum(counts)*np.diff(bins)[0],max(bins),max(bins)] ]
+        popt, pcov = curve_fit(Claro.gauss, bins[:-1], counts, bounds=fit_bounds, maxfev=1000)
+        pdev = np.sqrt(np.diag(pcov))
+        A, mean, dev = popt[0], popt[1], popt[2]
+        x = np.linspace(min(t_list), max(t_list), 1000)
+        fit = Claro.gauss(x, A, mean, dev)
+        ax[0].plot(x, fit, c='red')
+        
+        ax[0].annotate(f"N entries: {len(t_list)}\n"\
+                       +"Fit type: gauss"\
+                       +"\nMean: ({:.1e}".format(popt[1])+r'$\pm$'+'{:.1e})'.format(pdev[1])\
+                       +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
+                       **annotation_kwargs)
+        
+        #-----------------------------------------   
+        
+        # Widths' histogram
+        ax[1].set_title("Widths' histogram", fontsize=12)
+        ax[1].tick_params(axis='y', which='minor', width=0)
+        ax[1].yaxis.set_major_locator(MaxNLocator(integer=True))
+        counts, bins, pads = ax[1].hist(w_list, bins=int(np.sqrt(len(w_list))/4), density=False,
+                                label='Transition points (x)', alpha=.5,
+                                log=False, rwidth=1)
+        
+        fit_bounds = [ [0,0,0,0] , [sum(counts)*np.diff(bins)[0],max(bins),max(bins),np.inf] ]
+        popt, pcov = curve_fit(Claro.skew_gauss, bins[:-1], counts, bounds=fit_bounds, maxfev=1000)
+        pdev = np.sqrt(np.diag(pcov))
+        A, mean, dev, alpha = popt[0], popt[1], popt[2], popt[3]
+        x = np.linspace(min(w_list), max(w_list), 1000)
+        fit = Claro.skew_gauss(x, A, mean, dev, alpha)
+        ax[1].plot(x, fit, c='red')
+        
+        ax[1].annotate(f"N entries: {len(w_list)}\n"\
+                       +"Fit type: skew gauss"\
+                       +"\nMean: ({:.1e}".format(popt[1])+r'$\pm$'+'{:.1e})'.format(pdev[1])\
+                       +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
+                       **annotation_kwargs)
     
     ###########################################################################
     @staticmethod
