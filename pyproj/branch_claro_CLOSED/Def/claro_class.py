@@ -13,44 +13,52 @@ import scipy.stats as ss
 from scipy import special as sp
 from scipy.optimize import curve_fit
 from matplotlib.ticker import MaxNLocator
+from matplotlib.backends.backend_pdf import PdfPages
 
 ###############################################################################
 #                                Single class                                 #
 ###############################################################################
 
 class Single():
+    """Class for analysis of a single amplifier.
+    This class is not a child class of Claro but it encapsulates some methods from it, so they must go together.
+    """
     
     def __init__(self, fileinfo:dict):
-        self.path = fileinfo['path']
-        self.read_data()
-        self._meta = {
-            'path' : self.path,
-            'amplitude' : self.amplitude,
-            'transition' : self.transition,
-            'width' : self.width
-        }
-        self.fit_guess = [
-            self.amplitude,
-            self.transition,
-            self.amplitude/2
-        ]
-        self.fileinfo = fileinfo
+        self.fileinfo   = fileinfo
+        self.path       = fileinfo['path']
+        data = pd.read_csv(self.path, sep='\t', header=None, skiprows=None)
+        self.x          = data.iloc[2:,0].to_numpy()
+        self.y          = data.iloc[2:,1].to_numpy()
+        self.amplitude  = data.iloc[0,0]
+        self.transition = data.iloc[0,1]
+        self.width      = -data.iloc[0,2]
+        self._meta      = { 'path' : self.path, 'amplitude' : self.amplitude, 
+                           'transition' : self.transition, 'width' : self.width }
+        self.fit_params = { 'a' : None, 't' : None, 'w' : None, 'code' : 'bad', }
+        self.fit_guess  = [ self.amplitude, self.transition, self.width ]
     
     def __repr__(self):
         for key, value in self._meta.items():
             print("{:<25} {:<25}".format(key,value))
         return  f"x data: {self.x}\n" \
                 f"y data: {self.y}\n" \
-                f"fit_guess: {self.fit_guess}"
+                f"fit_params : {self.fit_params}\n" \
+                f"fit_guess: {self.fit_guess}\n"
     
-    def read_data(self):
-        data = pd.read_csv(self.path, sep='\t', header=None, skiprows=None)
-        self.x = data.iloc[2:,0].to_numpy()
-        self.y = data.iloc[2:,1].to_numpy()
-        self.amplitude = data.iloc[0,0]
-        self.transition = data.iloc[0,1]
-        self.width = -data.iloc[0,2]
-        
+    #----------------------------- HEADER METHODS ----------------------------#
+    # 
+    # def fit_erf(self, guesses:list='default',
+    #             interactive=True, log=False, warnings_ignore=True,
+    #             npoints=1000)
+    #
+    # # Requires running fit_erf beforehand
+    # def plot(self, npoints=1000,
+    #          interactive=False, log=True,
+    #          show_scatter=True, show_fit=True, show_transition=True,
+    #          save=False, save_path='.\plot', save_format='pdf', show=True,
+    #          **kwargs):
+    #     
     #-------------------------------------------------------------------------#
     
     def fit_erf(self, guesses:list='default',
@@ -76,13 +84,6 @@ class Single():
         x = self.x
         y = self.y
         meta = self._meta
-        
-        # Default dict of fit parameters
-        self.fit_params = {
-                'params' : None,
-                'errors' : None,
-                'code' : 'bad',
-        }
         
         try:
             if warnings_ignore==True:
@@ -117,17 +118,17 @@ class Single():
             if interactive==True: print(err)
         
         else: 
-            self.fit_params = {
-                'params' : [fit_params[i] for i in range(len(fit_params))],
-                'errors' : [fit_dev[i] for i in range(len(fit_dev))],
-                'code' : 'good'
-            }
             # self.fit_params = {
-            #     'amplitude' : [fit_params[0], fit_dev[0]],
-            #     'transition_x' : [fit_params[1], fit_dev[1]],
-            #     'transition_y' : [fit_params[2], fit_dev[2]],
+            #     'params' : [fit_params[i] for i in range(len(fit_params))],
+            #     'errors' : [fit_dev[i] for i in range(len(fit_dev))],
             #     'code' : 'good'
             # }
+            self.fit_params = {
+                'a' : [fit_params[0], fit_dev[0]],
+                't' : [fit_params[1], fit_dev[1]],
+                'w' : [fit_params[2], fit_dev[2]],
+                'code' : 'good'
+            }
         
         finally:
             if log==True:
@@ -139,8 +140,7 @@ class Single():
     def plot(self, npoints=1000,
              interactive=False, log=True,
              show_scatter=True, show_fit=True, show_transition=True,
-             save=False, save_path='.\plot', save_format='pdf', show=True,
-             **kwargs):
+             save=False, save_dir=".\\", save_format="pdf"):
         """Scatterplot of data, with options to plot both the erf fit and transition point."""
         
         x = self.x
@@ -184,8 +184,8 @@ class Single():
             if show_fit == True:
                 
                 # x,y data computed as a grid of npoints and using parameters of the fit
-                fit_params = metafit['params']
-                fit_errs = metafit['errors']
+                fit_params = [metafit['a'][0], metafit['t'][0], metafit['w'][0]]
+                fit_errs = [metafit['a'][1], metafit['t'][1], metafit['w'][1]]
                 xfit = np.linspace(x.min(), x.max(), npoints)
                 yfit= func(xfit, *fit_params)
                 
@@ -194,7 +194,7 @@ class Single():
                              +r" $\pm$ "+f"{fit_errs[0]:.2f})\n"\
                              +f"Transition = ({fit_params[1]:.2f}"+r" $\pm$ "\
                              +f"{fit_errs[1]:.2e})\n"\
-                             +f"Width = ({fit_params[2]*2:.2f}"+r" $\pm$ "+f"{fit_errs[2]*2:.2E})",
+                             +f"Width = ({fit_params[2]:.2f}"+r" $\pm$ "+f"{fit_errs[2]:.2e})",
                              xy=(0.025, .3), xycoords='axes fraction', verticalalignment='top',
                              color='r', alpha=0.8,
                              bbox=dict(boxstyle="square", fc="white", ec="black", lw=1, alpha=0.8))
@@ -209,43 +209,23 @@ class Single():
                             alpha=0.5, zorder=1)
                 plt.hlines(y=ytrans, xmin=x[0], xmax=x[-1], linestyles='dashed',
                             alpha=0.5, zorder=1)
-                plt.annotate(f"Transition = {fit_params[1]:.2f}\nWidth = {fit_params[2]*2:.2f}", 
+                plt.annotate(f"Transition = {fit_params[1]:.2f}\nWidth = {fit_params[2]:.2f}", 
                              xy=(0.025, .6), xycoords='axes fraction', verticalalignment='top',)
     
         except ValueError as err: 
             if interactive==True: print(err)
         
         if save == True:
-            plt.show()
-            plt.savefig(save_path+'.'+save_format)
-            plt.close()
-        if show == True:
-            plt.show()
-            plt.close()
-        else:
-            plt.close()
-    
+            if not os.path.exists(save_dir): os.mkdir(save_dir)
+            plt.savefig(save_dir\
+                        +f"St-{fileinfo['station']}_chip-{fileinfo['chip']}_c-{fileinfo['ch']}."\
+                        +save_format)
+            
 ###############################################################################
 #                                Claro class                                  #
 ###############################################################################
 
 class Claro():
-    
-    # def __init__():
-    # def __repr__():
-    # def get_fileinfo():
-    # def find_fileinfo():
-
-    # def hist_tw():
-    # 
-    # @staticmethod
-    # def func():
-    # @staticmethod
-    # def skew_gaus():
-    # @staticmethod
-    # def gaus():
-        
-    #-------------------------------------------------------------------------#
     
     PARAMS = {
         "DIRPATH"  : "*Station_1__*\Station_1__??_Summary\Chip_???\S_curve",
@@ -261,23 +241,30 @@ class Claro():
         self.logoption = log
         
         # Attributes
-        self._tdir = TDIR
+        self._tdir = TDIR # has @property and @*.setter methods
         self._params = params
-        self.fileinfos = dict()
-        self.good_files = []
-        self.bad_files = []
-        self.meta = dict()
-        
-        self.tlist = []
-        self.wlist = []
-        self.fit_tlist = []
-        self.fit_wlist = []
+        # from get_fileinfos()
+        self.fileinfos = { 'path' : {'path' : None,
+                                     'station': None,
+                                     'sub': None,
+                                     'chip':None,
+                                     'ch':None,
+                                     'offset':None,
+                                     'amplitude': None,
+                                     'transition': None,
+                                     'width': None, }
+                         }
+        self.good_files, self.bad_files = [], []
+        self.meta = { 'nfiles' : None, 'ngood' : None, 'nbad' : None, }
+        self.tlist, self.wlist = [], []
+        # from analysis_loop
+        self.fit_tlist, self.fit_wlist = [], []
+        self.fit_tdiff, self.fit_wdiff = [], []
         
     def __repr__(self):
         return  f"top dir:   {self._tdir}\n" \
                 f"params:    {self._params}\n" \
                 f"meta:      {self.meta}\n"
-    
     
     @property
     def tdir(self):
@@ -285,6 +272,19 @@ class Claro():
     @tdir.setter
     def tdir(self, value):
         self._tdir = value
+        
+    #----------------------------- HEADER METHODS ----------------------------#
+    # def get_fileinfos(self): -> self.fileinfos, self.meta, self.good_files, self.bad_files
+    #
+    # @staticmethod
+    # def find_fileinfos(fileinfos, path:str=None, chip:str='001', ch:str='0', station:str='1',
+    #                    sub:str='11',) -> dict():
+    # def analysis_loop(self, **kwargs):
+    # def plot_loop(self, fit_erf_dict, plot_dict):
+    # def plot_MultiPage(self, fit_erf_dict, plot_dict, save=False, save_path='aHundredPlots.pdf'): 
+    # def hist_tw(self, ax, source:str='file'):
+
+    #-------------------------------------------------------------------------#
     
     def get_fileinfos(self):
         """Function that walks on all subdirectories of TDIR that match DIRPATH and FILEPATH.
@@ -303,17 +303,25 @@ class Claro():
         
         if isinstance(TDIR, str)==False:
             raise NameError('Please provide a string with delimiter: double backslash (\\\) as top directory path.')
-    
-        enter = input(f'The default subfolders\' paths are {self._params["DIRPATH"]}.\n'
-                        +f'The default file names are {self._params["FILEPATH"]}.\n'
-                        +f'To confirm, press Enter. Press any other key to change the paths.\n')
-        if enter != '':
-            self._params['DIRPATH']  = input('Please provide subfolders\' paths. You may use wildcards.\n')
-            self._params['FILEPATH'] = input('Please provide file names. You may use wildcards.\n')
+        
+        #----------------------------- USER CONTROL --------------------------#
+        # enter = input(f'The default subfolders\' paths are {self._params["DIRPATH"]}.\n'
+        # +f'The default file names are {self._params["FILEPATH"]}.\n'
+        # +f'To confirm, press Enter. Press any other key to change the paths.\n')
+        # if enter != '':
+        #     self._params['DIRPATH']  = input(
+        #                'Please provide subfolders\' paths. You may use wildcards.\n')
+        #     self._params['FILEPATH'] = input(
+        #                'Please provide file names. You may use wildcards.\n')
+        # 
         
         for file in [OUTFILE, OUTBAD]:
             if log==True and os.path.isfile(file): os.remove(file)
         
+        del self.fileinfos
+        self.fileinfos = {}
+        del self.meta
+        self.meta = {}
         DIRPATH=self._params['DIRPATH']
         FILEPATH=self._params['FILEPATH']
         fileinfos = dict()
@@ -393,89 +401,108 @@ class Claro():
         
     ###########################################################################
     
-    # def make_child --> implement inheritance
-    # def plot_single():
-    # """Plot all the files you've walked through, making them Single objects, in a loop"""
-    # --> produce fit_tlist and fit_wlist and logs unfitted and unplotted
-    # --> build histograms of differences between file and plot
-    
-    def plot_loop(self, plot=True, **kwargs):
-        """Analyze and plot the whole dataset exloiting Single objects.
-        1. loop over all files stored in self.fileinfos
-        2. produce a Single object for each
-        3. fit and plot the Single object
-        Accepts **kwargs as dict with parameters passed to Single.plot().
+    def analysis_loop(self, fit_dict=None):
+        """Analyzes the whole dataset in fileinfos reading files as Single objects.
+        Produces lists of transition points (x) and widths deduced from fit, self.fit_tlist and self.fit_wlist.
+        Accepts **kwargs as parameters to pass to fit_erf(): (guesses:list='default', interactive=True, log=False, warnings_ignore=True, npoints=1000).
         """
+        if fit_dict==None:
+            fit_dict=dict(guesses='default', interactive=False, log=False, warnings_ignore=True, npoints=1000)
         for fileinfo in self.fileinfos.values():
             single = Single(fileinfo)
-            single.fit_erf()
-            ################### TO UPDATE/FINISH #########################
-            # if plot==True: single.plot(**kwargs)
-            # self.fit_tlist.append(single.fit_params['params'][1]) # amplitude, transx, width
-            # self.fit_wlist.append(single.fit_params['params'][2])
-            ############ what about the errors on trans and width? an error barplot? #############        
+            single.fit_erf(**fit_dict)
+            fileinfo['fit_params'] = single.fit_params
+            if single.fit_params['code']=='good':
+                self.fit_tlist.append(single.fit_params['t'][0])
+                self.fit_wlist.append(single.fit_params['w'][0])
+                self.fit_tdiff.append(single.transition-single.fit_params['t'][0])
+                self.fit_wdiff.append(single.width-single.fit_params['w'][0])
+         
+        return self.fileinfos
     
-    ###########################################################################
+    def plot_loop(self, fit_dict=None, plot_dict=None):
+        """Analyzes and plots the whole dataset exploiting Single objects.
+        Produces separate plots in a loop.
+        Accepts **kwargs as dict with parameters passed to Single.fit_erf() (refer to analysis_loop for list of params in docstring) and Single.plot(): (npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf', show=True, **kwargs).
+        """
+        
+        if fit_dict==None:
+            fit_dict=dict(guesses='default', interactive=False, log=False, warnings_ignore=True, npoints=1000)
+        if plot_dict==None:
+                plot_dict=dict(npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf')
+            
+        for fileinfo in self.fileinfos.values():
+            single = Single(fileinfo)
+            single.fit_erf(**fit_dict)
+            single.plot(**plot_dict)
+            plt.close()
     
-    def plot_MultiPage(self, log=False, save=False, save_path = 'aHundredPlots.pdf'):
-    # Loop on the files and print plots on multi-page pdf
-
-    # custom_n_files = 100     # This is used to break the printing of plots: comment the line
-                            # or assign to 'all' to plot all the files
-
-    # Histograms of transition points and widths
-    tw_hist = True # Choose True or False for plotting, showing and saving
-    t_list = []
-    w_list = []
-    
-    with PdfPages(save_path) as pdf:
-        per_page = 0
-        while not per_page:
+    def plot_MultiPage(self, fit_dict=None, plot_dict=None, save=True, save_path='aHundredPlots.pdf'):
+        """Loop on the files and print plots on multi-page pdf.
+        Accepts **kwargs as dict with parameters passed to Single.fit_erf() (refer to analysis_loop for list of params in docstring) and Single.plot(): (self, npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf', show=True, **kwargs).
+        Be aware that plot_dict options regulate showing or not of plots.
+        
+        #######################***WARNING***#######################
+        This method takes a while to print the pdf. Use it responsibly.
+        """
+        
+        with PdfPages(save_path) as pdf:
             per_page = int(input("How many plots do you want per page? Allowed values are 1,2,3,4,6. "))
             if per_page==1: nrows, ncols = 1, 1
             elif per_page==2: nrows, ncols = 2, 1
             elif per_page==3: nrows, ncols = 3, 1
             elif per_page==4: nrows, ncols = 2, 2
             elif per_page==6: nrows, ncols = 3, 2
-            # else: raise NameError("Please run again and choose one of the allowed number of subplots.")
-        
-        for n, file in enumerate(a.values()): # file is the sub-dict, access keys via file['key']
-    
-            # Preprocessing
-            print(f"Reading file n. {n}...", end='\r')
-            x,y,meta = read_data(file['path'])
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                metafit = fit_erf(x,y,meta, interactive=False, log=log_choice)
-    
-            meta['fit_dict'] = metafit
-            
-            # Building lists of transition points and widths
-            t_list.append(meta['transition'])
-            w_list.append(meta['width'])
-            
-            # Plotting and saving on multipage pdf
-            if isinstance(custom_n_files,int):
-                if n>=custom_n_files: continue
-            index = n%per_page+1
-            if index==1:
-                fig=plt.figure(figsize=(10,15)) 
-            fig.add_subplot(nrows,ncols,index)
-            plot_fit(x, y, metafit, fileinfo=file, show=True, save=False, log=log_choice)
-            if index==per_page or n==len(a.values())-1:
-                if save_choice: pdf.savefig(fig)
-                plt.close(fig)
-        plt.close()
+            else: raise NameError("Please run again and choose one of the allowed number of subplots.")
+            if fit_dict==None:
+                fit_dict=dict(guesses='default', interactive=False, log=False, warnings_ignore=True, npoints=1000)
+            if plot_dict==None:
+                plot_dict=dict(npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf')
+                
+            for n, fileinfo in enumerate(self.fileinfos.values()):
+                # Preprocessing
+                print(f"Reading file n. {n}...", end='\r')
+                single = Single(fileinfo)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    single.fit_erf(**fit_dict)
+           
+                # Plotting and saving on multipage pdf
+                index = n%per_page+1
+                if index==1:
+                    fig=plt.figure(figsize=(10,15))
+                fig.add_subplot(nrows,ncols,index)
+                single.plot(**plot_dict)
+                if index==per_page or n==(len(self.fileinfos.values())-1):
+                    if save:
+                        pdf.savefig(fig)
+                        plt.close()
+                    
+            print(f"Process completed. Output file: {save_path}")
+            plt.close()
     
     ###########################################################################
     
-    def hist_tw(t_list, w_list, ax):
+    def hist_tw(self, ax, source:str='file'):
+        """Produces histograms of transition points and widths from file or from fit.
+        Source can be 'file' or 'fit' or 'diff': the latter prints the histogram of differences bet fitted and from file.
+        Can be called only after preprocessing via analysis_loop(). 
+        """
+        if source=='file':
+            t_list = self.tlist
+            w_list = self.wlist
+        elif source=='fit':
+            t_list = self.fit_tlist
+            w_list = self.fit_wlist
+        elif source=='diff':
+            t_diff = self.fit_tdiff
+            w_diff = self.fit_wdiff
+        else:
+            raise NameError("Please provide 'fit' or 'file' as source for transition points and widths to plot.")
         
         annotation_kwargs = {'xy':(.1,.7), 'xycoords':'axes fraction',
                              'bbox':dict(boxstyle="round",edgecolor="black",facecolor="white",alpha=.8)}
-        
-        #-----------------------------------------   
-        
+        #-----------------------------------------
         # Transition histogram
         ax[0].set_title("Transition points' histogram", fontsize=12)
         ax[0].tick_params(axis='y', which='minor', width=0)
@@ -498,8 +525,7 @@ class Claro():
                        +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
                        **annotation_kwargs)
         
-        #-----------------------------------------   
-        
+        #-----------------------------------------
         # Widths' histogram
         ax[1].set_title("Widths' histogram", fontsize=12)
         ax[1].tick_params(axis='y', which='minor', width=0)
@@ -522,7 +548,11 @@ class Claro():
                        +"\nDev: ({:.1e}".format(popt[2])+r'$\pm$'+'{:.1e})'.format(pdev[2]),
                        **annotation_kwargs)
     
+    
     ###########################################################################
+    # Mathematical functions, static methods    
+    ###########################################################################
+    
     @staticmethod
     def func(x, ampl, a, b):
         """Modified erf function.
@@ -532,7 +562,7 @@ class Claro():
         Deafult guesses are [AMPLITUDE, TRANSITION, AMPLITUDE/2].
         """
         
-        return ampl/2*(1+sp.erf((x-a)/(b*np.sqrt(2))))
+        return ampl/2*(1+sp.erf((x-a)/(b/2*np.sqrt(2))))
     
     ###########################################################################
     @staticmethod
