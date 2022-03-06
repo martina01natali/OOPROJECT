@@ -92,13 +92,9 @@ class Single():
                         raise ValueError(f'Fit returned a parameter that is < 1e-6 or negative. Please try with different set of guesses.')
                 if interactive==True: print("Fit ok!")
                     
-        except ValueError as err:
-            meta['code'] = 'ValueError'
+        except (ValueError,RuntimeError) as err:
+            meta['code'] = 'error'
             if interactive==True: print(f'Error: {err}.\nThe fit parameters are not returned.')
-                
-        except RuntimeError as err:
-            meta['code'] = 'RuntimeError'
-            if interactive==True: print(err)
         
         else: 
             self.fit_params = {
