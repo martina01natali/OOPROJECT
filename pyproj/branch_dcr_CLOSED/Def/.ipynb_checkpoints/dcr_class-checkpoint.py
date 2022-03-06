@@ -26,7 +26,7 @@ class DarkCounts():
     def __init__(self, datafiles:dict=DATAFILES, params:dict=PARAMS):
         """Initializer that takes dict with relative paths of files to process and reads them, creating dataframes associated."""
         
-        self.datafiles = datafiles
+        self._datafiles = datafiles
         self.meta = {'path_wf' : datafiles['wf'], 'path_time' : datafiles['time'],}
         self._params = params
         
@@ -56,7 +56,7 @@ class DarkCounts():
                   +u"\u00B1"\
                   +' {:.0e}) Hz'.format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
             print("\nThe relative error associated to the DCR is equal to the percentage of \'bad\' waveforms detected in the provided dataset ({:.2f}%). This is an arbitrary choice due to lack of multiple measurements on the same instrument.".format(self.meta['% bad wf']))
-        except AttributeError as err:
+        except (AttributeError, KeyError) as err:
             print("DCR not estimated yet. Call .analysis() first.")
         
     @property
@@ -75,6 +75,14 @@ class DarkCounts():
     def params(self, value:dict):
         self._params = value
         
+    @property
+    def datafiles(self):
+        return self._datafiles
+    
+    @datafiles.setter
+    def datafiles(self, value:dict):
+        self._datafiles = value
+        
         
     ###########################################################################
     
@@ -85,7 +93,7 @@ class DarkCounts():
         
         """
         
-        timestamp_file_name = self.datafiles['time']
+        timestamp_file_name = self._datafiles['time']
         timestamp_path = os.path.join(os.getcwd(),timestamp_file_name)
         self.time = pd.read_csv(timestamp_path) 
         # if file is not found, FileNotFoundError is raised automatically
@@ -93,7 +101,7 @@ class DarkCounts():
         self.time.rename(columns = {'X: (s)': 'Event', 'Y: (Hits)':'Timestamp'}, inplace = True)
         self.time["Timestamp"] = self.time["Timestamp"].cumsum(axis=0)
                 
-        wf_file_name = self.datafiles['wf']
+        wf_file_name = self._datafiles['wf']
         wf_path = os.path.join(os.getcwd(),wf_file_name)
             
         with open(wf_file_name, 'r') as file_wf:
@@ -147,7 +155,8 @@ class DarkCounts():
         """
         
         if not self.wf_processed.empty:
-            raise NameError("Analysis has already ben run on this dataset. Check the analyzed dataframe by calling self.wf_processed.")
+            answer = input("Analysis has already ben run on this dataset. Check the analyzed dataframe by calling self.wf_processed. Do you want to proceed anyway? (y/n) " )
+            if answer=='n': return
         
         start_time = time.time()
         
@@ -248,7 +257,7 @@ class DarkCounts():
         print('Number of clean minima found: %d' % len(general_clean_min))
         print('Fraction of waveforms with too many minima or -inf data ("bad_wf") on total: {:.1%}'.format(N_bad_wf/custom_n_events))
         print('Total acquisition time: {0:0.3e} s'.format(total_time))
-        print('Estimated DCR: {:.2e} Hz'.format(self.meta['DCR (Hz)'])\
+        print('Estimated DCR: ({:.2e} '.format(self.meta['DCR (Hz)'])\
               +u"\u00B1"+" {:.0e}) Hz".format(self.meta['% bad wf']/100*self.meta['DCR (Hz)']))
             
         # Return control
@@ -261,9 +270,10 @@ class DarkCounts():
         copy.code.fillna(value='bad', inplace=True)
         copy['wfID'] = np.array(range(len(copy))) // 6250
         copy.set_index('wfID', append=True, inplace=True)
-        print("Process completed in %s s." % (format(time.time()-start_time,".2f")))
         
         self.wf_processed = copy
+        print("Process completed in %s s." % (format(time.time()-start_time,".2f")))
+        print("Processed dataset is stored in attribute .wf_processed.")
         return copy
 
     ###########################################################################
@@ -293,20 +303,24 @@ class DarkCounts():
                    'Noise'] = 'delayed crosstalk'
 
             return df
-    
-        mins = self.wf_processed.dropna()
-        mins = mins.loc[mins.code=='good']
-        mins['TIME'] = mins['TIME'].diff(periods=1)
-        mins = mins.iloc[1:,[0,-2]]
-        mins.rename(columns={'TIME':'Delta T (s)','ampl_min':'Amplitude (V)'}, inplace = True)
-    
-        mins = noise_discrimination(mins,
-                                    crosstalk_thr=crosstalk_thr,
-                                    delayed_cross_thr=delayed_cross_thr,
-                                    inplace=True)
-        self.wf_processed = mins
         
-        return self.wf_processed
+        try:
+            mins = self.wf_processed.dropna()
+            mins = mins.loc[mins.code=='good']
+            mins['TIME'] = mins['TIME'].diff(periods=1)
+            mins = mins.iloc[1:,[0,-2]]
+            mins.rename(columns={'TIME':'Delta T (s)','ampl_min':'Amplitude (V)'}, inplace = True)
+        
+            mins = noise_discrimination(mins,
+                                        crosstalk_thr=crosstalk_thr,
+                                        delayed_cross_thr=delayed_cross_thr,
+                                        inplace=True)
+            self.wf_processed = mins
+        except AttributeError:
+            print("This method can be called only once on a dataset, since it modifies it. You already run it, so you can go ahead! If you want to retrieve the processed dataset, access the attribute .wf_processed or use the return of this function (that is a copy of the attribute).")
+        
+        copy = self.wf_processed.copy()
+        return copy
     
     ###########################################################################
     
