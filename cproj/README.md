@@ -1,5 +1,13 @@
 # README
 
+## Compile properly please
+
+- remember to include the headers in the file that contains the main() function
+- remember to give the compiler the name of the object if using flag -o
+- remember to compile linking all compiling files (.cpp)
+
+g++ -o read_claro read_claro.cpp Claro.cpp support_func.cpp
+
 ## c++ projects
 
 **GIT BRANCH OF CHOICE**: `cpp`

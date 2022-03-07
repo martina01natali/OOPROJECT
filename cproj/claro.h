@@ -1,3 +1,10 @@
+/*//////////////////////////////////////////////////////////////////////////////
+This file contains the definition of class Claro.
+To compile correcly, this file needs:
+- Claro.cpp
+- support_func.cpp
+//////////////////////////////////////////////////////////////////////////////*/
+
 #ifndef CLARO_H
 #define CLARO_H
 
@@ -17,7 +24,7 @@ public:
     Claro(std::string filepath) : FILEPATH{filepath}
     {
         this->readFile();
-        this->xyData();
+        // this->xyData();
     }
 
 // Setters and getters
@@ -29,6 +36,7 @@ public:
     void readFile();
     DataStruct xyData();
     std::vector<std::string> ssplit(std::string const& s, std::string const& del);
+    void linear_fit();
 };
 
 // Support functions

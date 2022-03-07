@@ -31,6 +31,9 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     float b {bCoeff(data.x,data.y)};
     float rquadro {rsq(data.x,data.y)};
     float sigma {sigmasq(data.x,data.y)};
+    std::cout << "Chosen y values for linear fit are:" << '\n';
+    targetfile.linear_fit();
+    std::cout << "End values" << '\n';
 
     std::cout << a << std::endl;
     std::cout << b << std::endl;

@@ -1,3 +1,7 @@
+/*//////////////////////////////////////////////////////////////////////////////
+This file contains the implementation of the methods of class Claro, defined in Claro.h.
+//////////////////////////////////////////////////////////////////////////////*/
+
 // #include <cstdlib>
 #include <iostream>
 #include <cstring>
@@ -12,6 +16,7 @@
 using namespace std;
 
 //----------------------------------------------------------------------------//
+
 void Claro::readFile() //(const std::string& FILE)
 /*
  * This function does this:
@@ -48,14 +53,22 @@ void Claro::readFile() //(const std::string& FILE)
 }
 //----------------------------------------------------------------------------//
 DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
+
+/////////////////////////// UPDATE TO MAKE /////////////////////////////////////
+// - return DataStruct and do nothing else if x,y,meta values are already attributes
+// or
+// - delete attributes and rewrite if they are already present
+// - update custom constructor
+////////////////////////////////////////////////////////////////////////////////
+
 {
     // take each line of the txt file as element
-    int i {}; // counter for lines
+    int i {0}; // counter for lines
     for (auto const line : this->lines)
     {
         // split each element in its tokens
         auto    tokens = ssplit(line, "\t");
-        int     j {}; // counter for tokens=columns
+        int     j {0}; // counter for tokens=columns
 
         for (auto token : tokens)
         {
@@ -80,6 +93,41 @@ DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
     }
     DataStruct copy {this->meta, this->x, this->y, this->y1};
     return copy;
+}
+//----------------------------------------------------------------------------//
+void Claro::linear_fit()
+/*
+ * The linear_fit function builds a linear fit on provided x,y data via maximum likelihood method, returning the maximum likelihood extimates of a,b parameters such that ax+b=y is the linear function that also satisfies Gauss' minimum squares regression method. Errors on a and b are provided as well as sigma2, variance of the estimation error. Sigma2 is distributed as a chi-squared random variable with deg=n-2 where n=number of  (x,y) tuples provided.
+ * To evaluate the performance of the fit one should fix the first order estimation error and use sigma2 (comparing with tabulated values for n-2 degrees of freedom) or r2 (comparing with tabulated values for n degrees of freedom).
+*/
+{
+    ///////////////////////////////////////////////////////////////////////
+    // NEEDS TO DEFINE THRESHOLD for xyData, both default value and user-controlled inside linear_fit
+    // select x,y data that satisfy provided threshold
+    // perform cmputations in the following order:
+    // a
+    // b
+    // sigma_2
+    // Var(a), Var(b), Var(x), Var(y)
+    // r2
+    ///////////////////////////////////////////////////////////////////////
+
+    float y_low {1}, y_high {1000}; // y thresholds
+    std::vector<float> chosen_y {}, chosen_x {};
+
+    for (int i {0}; i<y.size(); i++)
+    {
+        if (y.at(i)>y_low && y.at(i)<y_high)
+        {
+            chosen_x.push_back(x.at(i));
+            chosen_y.push_back(y.at(i));
+        }
+    }
+
+    float a = aCoeff(chosen_x, chosen_y);
+    float b = bCoeff(chosen_x, chosen_y);
+
+    ///////////////////////// GO ON FROM HERE /////////////////////////////////
 }
 //----------------------------------------------------------------------------//
 std::vector<std::string> Claro::ssplit(std::string const& s, std::string const& del)
