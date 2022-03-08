@@ -234,9 +234,7 @@ class iv():
     #--------------------------------
 
     def fit_iv(self):
-        """Performs both forward and reverse fit with this single method.
-
-        """
+        """Performs both forward and reverse fit with this single method."""
 
         self.fit_ivf()
         self.fit_ivr()
@@ -268,8 +266,7 @@ class iv():
     #--------------------------------
 
     def plot_ivr(self,temperature,ax):
-        """Class' method: plot of reversed, current vs voltage scatterplot and fit.
-        """
+        """Class' method: plot of reversed, current vs voltage scatterplot and fit."""
 
         ax[1].set_yscale("log")
         ax[1].scatter(self.ivr.V,self.ivr.I, marker='.', s=5)
@@ -298,8 +295,7 @@ class iv():
     #--------------------------------
 
     def plot_iv(self, temperature, ax):
-        """Class' method: shows forward and reverse plots.
-        """
+        """Class' method: shows forward and reverse plots."""
 
         self.plot_ivf(temperature, ax)
         self.plot_ivr(temperature, ax)
