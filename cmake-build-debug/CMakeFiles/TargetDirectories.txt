@@ -1,3 +1,0 @@
-C:/Users/MARTINA/Desktop/OOPROJECT/cmake-build-debug/CMakeFiles/read_claro.dir
-C:/Users/MARTINA/Desktop/OOPROJECT/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/MARTINA/Desktop/OOPROJECT/cmake-build-debug/CMakeFiles/rebuild_cache.dir
