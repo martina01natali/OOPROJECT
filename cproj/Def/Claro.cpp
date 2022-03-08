@@ -25,8 +25,7 @@ void Claro::readFile() //(const std::string& FILE)
  * - puts a whole line as an element of a vector<string>
  */
 {
-    std::ifstream input {this->FILEPATH.c_str()}; //.c_str converts to a c-string
-
+    std::ifstream input {this->FILEPATH.c_str()};
     if (!input)
     {
         std::cerr << "Error: Unable to open file" << std::endl;
@@ -41,12 +40,13 @@ void Claro::readFile() //(const std::string& FILE)
      * The following statement builds a std::vector of strings, each string
      * contains a single line of the txt file.
     */
+     std::cout << "\n******* Data From File ********" << '\n';
      while (std::getline(input, line))
     {
         if(line.size())
         {
             this->lines.push_back(line);
-            std::cout << line <<'\n';
+            std::cout << line << '\n';
         }
     }
     // return linesVector; // std::vector of std::strings, each element a line of the file
@@ -62,6 +62,9 @@ DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
 ////////////////////////////////////////////////////////////////////////////////
 
 {
+    DataStruct copy {this->meta, this->x, this->y, this->y1};
+    if (this->x.size()) { return copy; }
+
     // take each line of the txt file as element
     int i {0}; // counter for lines
     for (auto const line : this->lines)
@@ -91,43 +94,47 @@ DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
         }
         i++;
     }
-    DataStruct copy {this->meta, this->x, this->y, this->y1};
     return copy;
 }
 //----------------------------------------------------------------------------//
-void Claro::linear_fit()
+DataStruct Claro::linear_fit(float y_low, float y_high)
 /*
  * The linear_fit function builds a linear fit on provided x,y data via maximum likelihood method, returning the maximum likelihood extimates of a,b parameters such that ax+b=y is the linear function that also satisfies Gauss' minimum squares regression method. Errors on a and b are provided as well as sigma2, variance of the estimation error. Sigma2 is distributed as a chi-squared random variable with deg=n-2 where n=number of  (x,y) tuples provided.
  * To evaluate the performance of the fit one should fix the first order estimation error and use sigma2 (comparing with tabulated values for n-2 degrees of freedom) or r2 (comparing with tabulated values for n degrees of freedom).
 */
 {
-    ///////////////////////////////////////////////////////////////////////
-    // NEEDS TO DEFINE THRESHOLD for xyData, both default value and user-controlled inside linear_fit
-    // select x,y data that satisfy provided threshold
-    // perform cmputations in the following order:
-    // a
-    // b
-    // sigma_2
-    // Var(a), Var(b), Var(x), Var(y)
-    // r2
-    ///////////////////////////////////////////////////////////////////////
-
-    float y_low {1}, y_high {1000}; // y thresholds
     std::vector<float> chosen_y {}, chosen_x {};
 
+    std::cout << "\n******* Linear Fit Data *******" << '\n';
+    std::cout << "x" << '\t' << "y" << '\n';
     for (int i {0}; i<y.size(); i++)
     {
         if (y.at(i)>y_low && y.at(i)<y_high)
         {
             chosen_x.push_back(x.at(i));
             chosen_y.push_back(y.at(i));
+            std::cout << x.at(i) << '\t' << y.at(i) << '\n';
         }
     }
 
-    float a = aCoeff(chosen_x, chosen_y);
-    float b = bCoeff(chosen_x, chosen_y);
+    a.push_back(aCoeff(chosen_x, chosen_y));
+    a.push_back(aErr(chosen_x, chosen_y));
+    b.push_back(bCoeff(chosen_x, chosen_y));
+    b.push_back(bErr(chosen_x, chosen_y));
+    sigmasq_fit.push_back(sigmasq(chosen_x, chosen_y));
+    rsq_fit.push_back(rsq(chosen_x, chosen_y));
 
-    ///////////////////////// GO ON FROM HERE /////////////////////////////////
+    cout.precision(2);
+    // const char *pm = u8"\u00B1";
+    std::cout << "\nN entries: " << chosen_x.size() << '\n' << '\n';
+    std::cout << "********* Fit results *********" << '\n';
+    std::cout << "angular coeff (a): " << a.at(0) << " +- " << a.at(1) << '\n';
+    std::cout << "intercept (b): " << b.at(0) << " +- " << b.at(1) << '\n';
+    std::cout << "r2: " << rsq_fit.at(0) << '\n';
+    std::cout << "sigma2: " << sigmasq_fit.at(0) << '\n';
+
+    DataStruct fit_return {a, b, sigmasq_fit, rsq_fit};
+    return fit_return;
 }
 //----------------------------------------------------------------------------//
 std::vector<std::string> Claro::ssplit(std::string const& s, std::string const& del)

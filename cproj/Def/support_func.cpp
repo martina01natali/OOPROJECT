@@ -17,7 +17,7 @@ using namespace std;
 //----------------------------------------------------------------------------//
 float mean(const std::vector<float>& x)
 {
-    float sum {};
+    float sum {0};
     auto len {x.size()};
     for (auto& i : x) { sum += i; }
     // float sum = accumulate(x.begin(), x.end(), 0);
@@ -26,8 +26,9 @@ float mean(const std::vector<float>& x)
 }
 //----------------------------------------------------------------------------//
 float se(const std::vector<float>& x)
+/*Computes the sum of the squared errors wrt the mean of the data.*/
 {
-    float xse {};
+    float xse {0};
     float meanx {mean(x)};
     for (auto& i : x) { xse += std::pow((i-meanx),2); }
 
@@ -44,7 +45,7 @@ float var(const std::vector<float>& x)
 //----------------------------------------------------------------------------//
 float covar(const std::vector<float>& x, const std::vector<float>& y)
 {
-    float sum {};
+    float sum {0};
     auto len {x.size()};
     float meanx {mean(x)};
     float meany {mean(y)};
@@ -71,23 +72,25 @@ float bCoeff(const std::vector<float>& x, const std::vector<float>& y)
 }
 //----------------------------------------------------------------------------//
 float rsq(const std::vector<float>& x, const std::vector<float>& y)
+/* Computes an estimate of the r2 coefficient (Pearson) for linear regression. IMPORTANT: this coefficient is NOT AN INDEX OF THE PERFORMANCE OF THE FIT but depends only on the correlation of the input data. */
 {
     float varx {var(x)};
     float vary {var(y)};
     float covxy {covar(x,y)};
 
-    return covxy/(varx*vary);
+    return std::pow(covxy,2)/(varx*vary);
 }
 //----------------------------------------------------------------------------//
 float sigmasq(const std::vector<float>& x, const std::vector<float>& y)
+/* Computes an estimate of the variance of the error between the observed and fitted data. This quantity is distributed as a chi-squared random variable with n-2 degrees of freedom, where n is the number of x,y couples provided */
 {
-    float sum {};
+    float sum {0};
     auto len (x.size());
     float a {aCoeff(x,y)};
     float b {bCoeff(x,y)};
     for (int i {0}; i<len; i++) { sum += std::pow((y.at(i)-(a*x.at(i)+b)),2); }
 
-    return sum/(len-2);
+    return sum/(len-1); // using len-1 instead of len-2 for compatibility with taking 2 data (linear fit is not a fit but a line between two points)
 }
 //----------------------------------------------------------------------------//
 float aErr(const std::vector<float>& x, const std::vector<float>& y)
@@ -95,15 +98,16 @@ float aErr(const std::vector<float>& x, const std::vector<float>& y)
     float xse {se(x)};
     float sigma {sigmasq(x,y)};
 
-    return sigma/xse;
+    return sqrt(sigma/xse); // returning without sqrt gives the variance
 }
+//----------------------------------------------------------------------------//
 float bErr(const std::vector<float>& x, const std::vector<float>& y)
 {
-    float ss {};
+    float ss {0};
     float xse {se(x)};
     auto len {x.size()};
     float sigma_2 {sigmasq(x,y)};
     for (auto& i : x) { ss += std::pow(i,2); }
 
-    return sigma_2*ss/(len*xse);
+    return sqrt(sigma_2*ss/(len*xse)); // returning without sqrt gives the variance
 }

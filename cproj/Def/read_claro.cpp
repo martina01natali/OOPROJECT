@@ -23,29 +23,22 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     // Reading file and preparing std::vector of lines of file
     Claro targetfile {FILEPATH};
     DataStruct data = targetfile.xyData();
+    auto fit_results = targetfile.linear_fit(0,950);
 
-    float meanx = mean(data.x);
-    float varx = var(data.x);
-    float covarxy = covar(data.x,data.y);
-    float a {aCoeff(data.x,data.y)};
-    float b {bCoeff(data.x,data.y)};
-    float rquadro {rsq(data.x,data.y)};
-    float sigma {sigmasq(data.x,data.y)};
-    std::cout << "Chosen y values for linear fit are:" << '\n';
-    targetfile.linear_fit();
-    std::cout << "End values" << '\n';
+    // Support functions
+    // float meanx = mean(data.x);
+    // float varx = var(data.x);
+    // float covarxy = covar(data.x,data.y);
+    // float a {aCoeff(data.x,data.y)};
+    // float b {bCoeff(data.x,data.y)};
+    // float rquadro {rsq(data.x,data.y)};
+    // float sigma {sigmasq(data.x,data.y)};
 
-    std::cout << a << std::endl;
-    std::cout << b << std::endl;
-    std::cout << sigma << std::endl;
-    std::cout << rquadro << std::endl;
-    std::cout << covarxy << std::endl;
+    // std::cout << a << std::endl;
+    // std::cout << b << std::endl;
+    // std::cout << sigma << std::endl;
+    // std::cout << rquadro << std::endl;
+    // std::cout << covarxy << std::endl;
 
-    /* checkpoint since I cannot use a debugger eheheheheh
-    for (auto datum : targetfile.x)
-    {
-        std::cout << datum << std::endl;
-    }
-    // */
     return 0;
 }

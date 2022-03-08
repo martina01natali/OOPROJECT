@@ -15,7 +15,7 @@ class Claro
 private:
     std::string FILEPATH {};
     std::vector<std::string> lines {};
-    std::vector<float>  meta, x, y, y1;
+    std::vector<float>  meta, x, y, y1, a, b, sigmasq_fit, rsq_fit;
     // void setup() {}
 
 public:
@@ -24,7 +24,7 @@ public:
     Claro(std::string filepath) : FILEPATH{filepath}
     {
         this->readFile();
-        // this->xyData();
+        this->xyData();
     }
 
 // Setters and getters
@@ -36,7 +36,7 @@ public:
     void readFile();
     DataStruct xyData();
     std::vector<std::string> ssplit(std::string const& s, std::string const& del);
-    void linear_fit();
+    DataStruct linear_fit(float y_low, float y_high);
 };
 
 // Support functions

@@ -23,19 +23,19 @@ c++: 1 file in claro, read it (using std library), mettere parametri in containe
   bash script or python~
 - [x] put data in a vector
 - [x] divide data in vectors for x, y1, y2
-- [ ] select "middle" data (!= 0 && !=1000) and fit linearly with chi-squared minimization
-- [ ] construct header file and start building claro class for manipulation
+- [x] select "middle" data (!= 0 && !=1000) and fit linearly with chi-squared minimization
+- [x] construct header file and start building claro class for manipulation
   of files
-- [ ] implement data in a struct/class
-  - [ ] metadata could be put in a struct
-  - [ ] data could be put in a class with private and public functions for
+- [x] implement data in a struct/class
+  - [x] metadata could be put in a struct
+  - [x] data could be put in a class with private and public functions for
     fitting, constructors, getters, setters, etc...
 
 ### Fitting steps
-- [ ] select the values that are >0 and <1000 and put them in a container
-- [ ] implement linear minimization --> look on Guidi's lectures
-- [ ] provide parameters a,b and errors
-- [ ] build function to perform fit
+- [x] select the values that are >0 and <1000 and put them in a container
+- [x] implement linear minimization --> look on Guidi's lectures
+- [x] provide parameters a,b and errors
+- [x] build function to perform fit
 
 ## Workflow for an efficient class-building
 1. list all the things you need to compute, try to organize them but don't be overly strict
