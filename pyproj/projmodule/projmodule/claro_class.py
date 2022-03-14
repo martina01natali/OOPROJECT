@@ -251,11 +251,11 @@ class Claro():
         "UNFIT"    : "unfit_files.txt",
     }
     
-    def __init__(self, TDIR, params:dict=PARAMS, custom_n_files='all', log:bool=True):
+    def __init__(self, TDIR, params:dict=PARAMS, custom_n_files='all'):
         
         # User options
         self.custom_n_files = custom_n_files
-        self.logoption = log
+        self.logoption = True
         
         # Attributes
         self._tdir = TDIR # has @property and @.setter methods
@@ -439,7 +439,7 @@ class Claro():
             else:
                 self.unfit_files.append(fileinfo['path'])
         
-        print("\n\nProcess completed in %s s." % (format(time.time()-start_time,".2f")))
+        print("\nProcess completed in %s s." % (format(time.time()-start_time,".2f")))
         return self.fileinfos
 
     ###########################################################################
@@ -457,7 +457,7 @@ class Claro():
         if fit_dict==None:
             fit_dict=dict(guesses='default', interactive=False)
         if plot_dict==None:
-                plot_dict=dict(npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf')
+            plot_dict=dict(npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf')
             
         for fileinfo in self.fileinfos.values():
             single = Single(fileinfo)
@@ -504,7 +504,7 @@ class Claro():
                 if index==1:
                     fig=plt.figure(figsize=(10,15))
                 fig.add_subplot(nrows,ncols,index)
-                single.plot(**plot_dict, show=False)
+                single.plot(**plot_dict)
                 if index==per_page or n==(len(self.fileinfos.values())-1):
                     if save:
                         pdf.savefig(fig)

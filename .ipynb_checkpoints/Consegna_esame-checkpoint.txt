@@ -1,0 +1,21 @@
+# Progetto c++
+- leggere 1 file claro
+- fare fit lineare dei punti in mezzo (quelli != 0 && != 1000) con minimizzazione chi-quadrato (manualmente)
+- usare vector arrays per storare dati x e y, e iterare su vectors
+- rendere il fit una funzione e passare vectors come copy o const ref: provare entrambe le strade e confrontarle
+
+# Progetto python 
+## Process_claro
+- iterare sul chip
+- iterare sugli 8 canali
+- sistemare codici già fatti insieme (walk sui file, plot con fit erf function)
+- creare funzioni per produrre (e stampare) diversi tipi di plot
+- istogramma di punti di transizione e widths per tutti i file (optional)
+- confronto tra fit e transition point per ogni chip (optional)
+
+## SiPM
+- curve e fit diretta e inversa
+- spacchettare varie waveform e cercare picchi in singole waveforms
+- analizzare picchi: contarli, misurarne l'ampiezza
+- plot 2D ampiezza vs intervallo di tempo
+- stima grossolana dark count rate considerando numero totale di picchi e tempo totale riportato nel file della waveform
