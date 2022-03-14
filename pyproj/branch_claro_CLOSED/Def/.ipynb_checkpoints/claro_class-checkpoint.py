@@ -22,6 +22,13 @@ from matplotlib.backends.backend_pdf import PdfPages
 class Single():
     """Class for analysis of a single amplifier.
     This class is not a child class of Claro but it encapsulates some methods from it, so they must go together.
+    
+    If you're working with a single file instead of a dictionary from Claro object, you can create
+    a Single object by providing a dict with the path only: 
+    
+    fileinfo:dict = {
+     'path': 'example.txt',
+    }
     """
     
     def __init__(self, fileinfo:dict):

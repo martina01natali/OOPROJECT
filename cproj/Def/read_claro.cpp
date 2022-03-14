@@ -11,8 +11,7 @@
 using namespace std;
 
 //----------------------------------------------------------------------------//
-int main()  // This may seem stupid, but it is COMPULSORY to call the main
-            // function main(). Not doing it leads to the error "undefined reference to `WinMain'".
+int main()
 {
     // User control section
     std::cout   << "Enter path to file to process\n";
@@ -20,10 +19,11 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     std::cin    >> FILEPATH;
     std::cout   << "You entered: " << "\"" + FILEPATH + "\"\n";
 
-    // Reading file and preparing std::vector of lines of file
+    // Reading file and fitting linearly data in given range of values of y
     Claro targetfile {FILEPATH};
     DataStruct data = targetfile.xyData();
     DataStruct fit_results = targetfile.linear_fit(0,950);
+    // auto [a,b,sigma,rsq] = fit_results; // structured binding is available only from c++17 on, but I don't have it :)
 
     std::ofstream outf("fit_results.txt", std::ios::out);
     if (outf.is_open()) {
@@ -37,7 +37,7 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
         outf.close();
     }
 
-    // Support functions
+    // Support functions calls
     // float meanx = mean(data.x);
     // float varx = var(data.x);
     // float covarxy = covar(data.x,data.y);
@@ -45,12 +45,6 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     // float b {bCoeff(data.x,data.y)};
     // float rquadro {rsq(data.x,data.y)};
     // float sigma {sigmasq(data.x,data.y)};
-
-    // std::cout << a << std::endl;
-    // std::cout << b << std::endl;
-    // std::cout << sigma << std::endl;
-    // std::cout << rquadro << std::endl;
-    // std::cout << covarxy << std::endl;
 
     return 0;
 }

@@ -49,17 +49,9 @@ void Claro::readFile() //(const std::string& FILE)
             std::cout << line << '\n';
         }
     }
-    // return linesVector; // std::vector of std::strings, each element a line of the file
 }
 //----------------------------------------------------------------------------//
 DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
-
-/////////////////////////// UPDATE TO MAKE /////////////////////////////////////
-// - return DataStruct and do nothing else if x,y,meta values are already attributes
-// or
-// - delete attributes and rewrite if they are already present
-// - update custom constructor
-////////////////////////////////////////////////////////////////////////////////
 
 {
     DataStruct copy {this->meta, this->x, this->y, this->y1};
@@ -100,7 +92,7 @@ DataStruct Claro::xyData() //(const std::vector<std::string>& linesVector)
 DataStruct Claro::linear_fit(float y_low, float y_high)
 /*
  * The linear_fit function builds a linear fit on provided x,y data via maximum likelihood method, returning the maximum likelihood extimates of a,b parameters such that ax+b=y is the linear function that also satisfies Gauss' minimum squares regression method. Errors on a and b are provided as well as sigma2, variance of the estimation error. Sigma2 is distributed as a chi-squared random variable with deg=n-2 where n=number of  (x,y) tuples provided.
- * To evaluate the performance of the fit one should fix the first order estimation error and use sigma2 (comparing with tabulated values for n-2 degrees of freedom) or r2 (comparing with tabulated values for n degrees of freedom).
+ * To evaluate the performance of the fit one should fix the first order estimation error and use sigma2 (comparing with tabulated values for n-2 degrees of freedom) or, to assess the actual correlation between the data, use r2 (comparing with tabulated values for n degrees of freedom).
 */
 {
     std::vector<float> chosen_y {}, chosen_x {};

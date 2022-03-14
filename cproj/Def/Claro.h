@@ -15,13 +15,13 @@ class Claro
 private:
     std::string FILEPATH {};
     std::vector<std::string> lines {};
-    std::vector<float>  meta, x, y, y1, a, b, sigmasq_fit, rsq_fit;
+    std::vector<float>  meta {}, x {}, y {}, y1 {}, a {}, b {}, sigmasq_fit {}, rsq_fit {};
     // void setup() {}
 
 public:
 // Constructors
     Claro() = default;
-    Claro(std::string filepath) : FILEPATH{filepath}
+    Claro(std::string const& filepath) : FILEPATH{filepath}
     {
         this->readFile();
         this->xyData();
@@ -29,7 +29,7 @@ public:
 
 // Setters and getters
     void reset() { *this = Claro(); }
-    void setFilePath(std::string filepath) { FILEPATH = filepath; }
+    void setFilePath(std::string const& filepath) { FILEPATH = filepath; }
     const std::string& getFilePath() { return FILEPATH; }
 
 // Other methods

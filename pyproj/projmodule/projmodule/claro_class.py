@@ -21,17 +21,33 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 class Single():
     """Class for analysis of a single amplifier.
-    This class is not a child class of Claro but it encapsulates some methods from it, so they must go together.
-    
-    If you're working with a single file instead of a dictionary from Claro object, you can create
-    a Single object by providing a dict with the path only: 
+    This class is not a child class of Claro but it encapsulates some
+    methods from it, so they must go together.
+    If you're working with a single file instead of a dictionary from
+    Claro object, you can create a Single object by providing a dict
+    with the path only:
     
     fileinfo:dict = {
      'path': 'example.txt',
     }
+    Notice that with this construction the property self.fileinfos will
+    have its default values, which are all the necessary keys and empty
+    strings for string values, and None values for arithmetic values.
     """
     
-    def __init__(self, fileinfo:dict):
+    FILEINFO = {
+        'path' : '',
+        'station': '',
+        'sub': '',
+        'chip':'',
+        'ch':'',
+        'offset':'',
+        'amplitude': None,
+        'transition': None,
+        'width': None,
+    }
+    
+    def __init__(self, fileinfo:dict=FILEINFO):
         self.fileinfo   = fileinfo
         self.path       = fileinfo['path']
         data = pd.read_csv(self.path, sep='\t', header=None, skiprows=None)
@@ -200,6 +216,32 @@ class Single():
 ###############################################################################
 
 class Claro():
+    """Class dedicated to analysis of the whole batch of files in secondolotto_1.
+    
+    The class provides a function (.get_fileinfos()) to walk over a provided
+    top directory and find all the files that match a given directory path
+    and filename. The function must be called outside of the initializer.
+    Other ethods provided for analysis:
+    - print_log: prints the lists of readable files, unreadable files and,
+    if analysis_loop() has already been called, can print the log of
+    unfittable files;
+    - [@staticmethod] find_fileinfos: returns the dict with the metadata
+    of a single file, provided the path of the latter or the station, chip,
+    ch and offset values;
+    - analysis_loop: analyzes all readable files found by get_fileinfos that
+    contain "good" data and fits each of them with a modified erf function;
+    this function exploits the Single.fit_erf() function to fit;
+    - plot_loop: loops on all good and fittable files that are found and
+    exploits the Single.plot() function to plot them;
+    - plot_MultiPage: does the same as plot_loop, but stores the plots in
+    a multi-page pdf, with a number of plots per page that is user-defined;
+    - hist_tw: plots the histograms ot transition and widths values, and
+    provides an option to choose the source of those values: allowed sources
+    are the raw data, the fitted data or the difference between the two.
+    - [@staticmethod] func, skew_gauss, gauss are mathematical support
+    functions for fitting and represent a modified erf function and the
+    pdfs of a skewed, not-normalized gaussian and a not-normalized gaussian.  
+    """
     
     PARAMS = {
         "DIRPATH"  : "*Station_1__*\Station_1__??_Summary\Chip_???\S_curve",
@@ -258,7 +300,8 @@ class Claro():
     def get_fileinfos(self):
         """Function that walks on all subdirectories of TDIR that match DIRPATH and FILEPATH.
             
-        Has an interactive interface for the user and returns a dict containing the following keys: path, station, sub, chip, ch, offset, amplitude, transition, width.
+        Has an interactive interface for the user and returns a dict containing the following
+        keys: path, station, sub, chip, ch, offset, amplitude, transition, width.
         """
         
         # Returns processing time as well.
@@ -405,7 +448,10 @@ class Claro():
         """Analyzes and plots the whole dataset exploiting Single objects.
         
         Produces separate plots in a loop.
-        Accepts dict with parameters passed to Single.fit_erf() (refer to analysis_loop for list of params in docstring) and Single.plot(): (npoints=1000, interactive=False, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf', show=True).
+        Accepts dict with parameters passed to Single.fit_erf() (refer to analysis_loop
+        for list of params in docstring) and Single.plot(): (npoints=1000, interactive=False,
+        show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot',
+        save_format='pdf', show=True).
         """
         
         if fit_dict==None:
@@ -423,7 +469,11 @@ class Claro():
     def plot_MultiPage(self, fit_dict=None, plot_dict=None, save=True, save_path='aHundredPlots.pdf'):
         """Loop on the files and print plots on multi-page pdf.
         
-        Accepts **kwargs as dict with parameters passed to Single.fit_erf() (refer to analysis_loop for list of params in docstring) and Single.plot(): (self, npoints=1000, interactive=False, log=True, show_scatter=True, show_fit=True, show_transition=True, save=False, save_dir='.\plot', save_format='pdf', show=True, **kwargs).
+        Accepts **kwargs as dict with parameters passed to Single.fit_erf()
+        (refer to analysis_loop for list of params in docstring) and
+        Single.plot(): (self, npoints=1000, interactive=False, log=True,
+        show_scatter=True, show_fit=True, show_transition=True, save=False,
+        save_dir='.\plot', save_format='pdf', show=True, **kwargs).
         Be aware that plot_dict options regulate showing or not of plots.
         
         #######################***WARNING***#######################
@@ -468,7 +518,8 @@ class Claro():
     def hist_tw(self, ax, source:str='file'):
         """Produces histograms of transition points and widths from file or from fit.
         
-        Source can be 'file' or 'fit' or 'diff': the latter prints the histogram of differences bet fitted and from file.
+        Source can be 'file' or 'fit' or 'diff': the latter prints the
+        histogram of differences bet fitted and from file.
         Can be called only after preprocessing via analysis_loop(). 
         Needs externally-provided figure, axis and saving control. 
         """
