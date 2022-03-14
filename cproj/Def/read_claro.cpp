@@ -1,5 +1,5 @@
-// #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -23,7 +23,19 @@ int main()  // This may seem stupid, but it is COMPULSORY to call the main
     // Reading file and preparing std::vector of lines of file
     Claro targetfile {FILEPATH};
     DataStruct data = targetfile.xyData();
-    auto fit_results = targetfile.linear_fit(0,950);
+    DataStruct fit_results = targetfile.linear_fit(0,950);
+
+    std::ofstream outf("fit_results.txt", std::ios::out);
+    if (outf.is_open()) {
+        outf << "********* Fit results *********" << '\n';
+        outf << std::scientific;
+        outf << std::setprecision(2) << "angular coeff (a): " << fit_results.x1.at(0) << " +- " << fit_results.x1.at(1) << '\n';
+        outf << std::setprecision(2) << "intercept (b): " << fit_results.x2.at(0) << " +- " << fit_results.x2.at(1) << '\n';
+        outf << std::fixed;
+        outf << "sigma2: " << fit_results.y1.at(0) << '\n';
+        outf << std::setprecision(2) << "r2: " << fit_results.y2.at(0) << '\n';
+        outf.close();
+    }
 
     // Support functions
     // float meanx = mean(data.x);

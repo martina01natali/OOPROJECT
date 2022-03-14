@@ -8,7 +8,7 @@ To compile correcly, this file needs:
 #ifndef CLARO_H
 #define CLARO_H
 
-struct DataStruct { std::vector<float>  meta, x, y, y1; };
+struct DataStruct { std::vector<float>  x1, x2, y1, y2; };
 
 class Claro
 {

@@ -1,0 +1,5 @@
+********* Fit results *********
+angular coeff (a): 1.45e+002 +- 6.01e+001
+intercept (b): -2.29e+004 +- 9.60e+003
+sigma2: 45766.02
+r2: 0.74
