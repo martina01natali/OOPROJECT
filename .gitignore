@@ -1,7 +1,7 @@
 # List of paths to ignore in sync
 
 # Config files
-*/desktop.ini
+*desktop.ini
 
 # Heavy loads
 pyproj/branch_sipm/Data/*
