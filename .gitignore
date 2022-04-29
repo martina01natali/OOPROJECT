@@ -6,6 +6,7 @@
 # Heavy loads
 pyproj/branch_sipm/Data/*
 pyproj/branch_dcr/Data/*
-pyproj/branch_dcr/Def/Plots*/*
-pyproj/branch_dcr/Def/Plots*/
+pyproj/branch_dcr*/Plots*/*
+pyproj/branch_dcr*/Plots*/
 pyproj/branch_dcr_CLOSED/Data/*
+pyproj/branch_dcr*/Data/*
