@@ -2,6 +2,8 @@
 Exam project for Object Oriented Programming course.
 
 The main goal of the exam was to produce two projects, in Python and C++, to analyze experimental data from tests on amplifiers and SiPMs.
+
+
 Organization:
 - pyproj is the project in Python and Jupyter Notebooks
 - cproj is the project in C++
